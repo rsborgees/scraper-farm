@@ -161,7 +161,11 @@ async function runAllScrapers(overrideQuotas = null) {
                     const { products: scrapedDriveItems, attemptedIds, stats } = await scrapeSpecificIds(context, sortedFarmDriveItems, farmQuota);
 
                     scrapedDriveItems.forEach(p => {
-                        const driveItem = sortedFarmDriveItems.find(i => normalizeId(i.id) === normalizeId(p.id));
+                        const driveItem = sortedFarmDriveItems.find(i => {
+                            const driveBase = normalizeId(i.id).split('_')[0];
+                            const prodBase = normalizeId(p.id).split('_')[0];
+                            return driveBase === prodBase;
+                        });
                         p.bazar = driveItem ? !!driveItem.bazar : false;
                         p.isBazar = p.bazar;
                         p.bazarFavorito = driveItem ? !!driveItem.bazarFavorito : false;
@@ -173,7 +177,11 @@ async function runAllScrapers(overrideQuotas = null) {
 
                     // Propagar flags (FAVORITO/BAZAR) do Drive para o produto final
                     scrapedDriveItems.forEach(p => {
-                        const driveItem = farmDriveItems.find(i => normalizeId(i.id) === normalizeId(p.id)); // Use farmDriveItems for context
+                        const driveItem = farmDriveItems.find(i => {
+                            const driveBase = normalizeId(i.id).split('_')[0];
+                            const prodBase = normalizeId(p.id).split('_')[0];
+                            return driveBase === prodBase;
+                        });
                         if (driveItem) {
                             p.bazar = !!driveItem.bazar;
                             p.favorito = !!driveItem.isFavorito;
