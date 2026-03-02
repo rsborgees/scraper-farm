@@ -201,10 +201,10 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
             roundCounts[storeKey]++;
         });
 
-        // Se ainda houver gap, preenche com QUALQUER um que tenha saldo diário
+        // Se ainda houver gap, preenche com QUALQUER um que tenha saldo diário (Regular ou Bazar)
         if (finalSelection.length < 7) {
             gap = 7 - finalSelection.length;
-            const remainingExtras = regularPool.filter(p => {
+            const remainingExtras = eligible.filter(p => { // Alterado de regularPool para eligible
                 if (selectedIds.has(p.id)) return false;
                 const s = (p.brand || p.loja || '').toLowerCase();
                 const storeKey = s === 'dress' || s === 'dressto' ? 'dressto' : s;

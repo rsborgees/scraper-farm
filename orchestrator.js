@@ -24,6 +24,7 @@ const {
 } = require('./messageBuilder');
 const { scrapeFarmSiteNovidades } = require('./scrapers/farm/siteNovidades');
 const { getRemainingQuotas, recordSentItems } = require('./dailyStatsManager');
+const { scrapeSpecificIdsGeneric } = require('./scrapers/idScanner'); // MOVIDO PARA CIMA
 
 
 /**
@@ -139,10 +140,8 @@ async function runAllScrapers(overrideQuotas = null) {
                 });
 
                 const farmDriveItems = Array.from(uniqueFarmItems.values()).filter(item => {
-                    // REGRA OUT/2026: Não pega mais favoritos e novidades no horário (A MENOS QUE SEJA BAZAR)
-                    if ((item.isFavorito || item.novidade) && !item.bazar) return false;
-
                     // Farm Drive: 48h (2 dias)
+                    // Permitimos tudo do Drive que passar no filtro de duplicados, Bazar tem prioridade no score
                     return !isDuplicate(normalizeId(item.id), { force: false, maxAgeHours: 48 }, item.preco);
                 });
 
@@ -200,7 +199,7 @@ async function runAllScrapers(overrideQuotas = null) {
                 // 🚗 DRIVE-FIRST FOR OTHER STORES (Dressto, KJU, ZZMall, Live)
                 // =================================================================
                 const otherStores = ['kju', 'zzmall', 'live'];
-                const { scrapeSpecificIdsGeneric } = require('./scrapers/idScanner');
+                // require ja no topo
 
                 for (const store of otherStores) {
                     // Filtra favoritos e novidades (A MENOS QUE SEJA BAZAR)
