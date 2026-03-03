@@ -70,16 +70,16 @@ console.table(Object.entries(stats).map(([brand, data]) => ({
 // Summary checks
 const farm = stats['FARM'] || { total: 0, siteNovidade: 0, bazar: 0 };
 console.log('\nFARM Checks:');
-console.log(`- Total: ${farm.total} (Expected: 5) -> ${farm.total === 5 ? '✅' : '❌'}`);
+console.log(`- Total: ${farm.total} (Expected: 7) -> ${farm.total === 7 ? '✅' : '❌'}`);
 console.log(`- Bazar: ${farm.bazar} (Expected: 1) -> ${farm.bazar === 1 ? '✅' : '❌'}`);
-console.log(`- Regular: ${farm.total - farm.bazar} (Expected: 4) -> ${farm.total - farm.bazar === 4 ? '✅' : '❌'}`);
+console.log(`- Regular: ${farm.total - farm.bazar} (Expected: 6) -> ${farm.total - farm.bazar === 6 ? '✅' : '❌'}`);
 
 const live = stats['LIVE'] || { total: 0 };
 console.log('\nLIVE Check:');
 console.log(`- Total: ${live.total} (Expected: 1) -> ${live.total === 1 ? '✅' : '❌'}`);
 
-if (selection.length === 9) {
-    console.log('\nOverall Result: SUCCESS! Total items = 9.');
+if (selection.length === 11) {
+    console.log('\nOverall Result: SUCCESS! Total items = 11.');
 } else {
-    console.log(`\nOverall Result: FAILURE! Total items = ${selection.length} (Expected: 9).`);
+    console.log(`\nOverall Result: FAILURE! Total items = ${selection.length} (Expected: 11).`);
 }

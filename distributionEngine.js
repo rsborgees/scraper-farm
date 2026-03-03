@@ -2,8 +2,8 @@
  * Engine de Distribuição de Links
  */
 
-// Cotas Diárias (Base ~9 links por execução para atingir ~135/dia em 15 horários)
-const TOTAL_LINKS = 9;
+// Cotas Diárias (Base ~11 links por execução para atingir ~165/dia em 15 horários)
+const TOTAL_LINKS = 11;
 const QUOTAS = {
     FARM: {
         percent: 0.53,
@@ -138,14 +138,14 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
     }
 
     // 3. SELEÇÃO REGULAR (Até atingir TOTAL_LINKS = 7)
-    // Regra: 5 Farm, 2 Dress To, 1 Kju, 1 Live
+    // Regra: 7 Farm, 2 Dress To, 1 Kju, 1 Live
     const regularPool = eligible.filter(p => !p.bazar);
 
     // PRIORIDADES E QUOTAS
     const mainStores = ['farm', 'dressto', 'kju', 'live'];
     const secondaryStores = ['zzmall'];
     const storeTargets = {
-        farm: 5,
+        farm: 7,
         dressto: 2,
         kju: 1,
         live: 1
@@ -200,7 +200,7 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         }
     }
 
-    // 4. Preenchimento de segurança se não atingiu ~9 itens (SEM PASSAR DA QUOTA DIÁRIA)
+    // 4. Preenchimento de segurança se não atingiu ~11 itens (SEM PASSAR DA QUOTA DIÁRIA)
     if (finalSelection.length < TOTAL_LINKS) {
         let gap = TOTAL_LINKS - finalSelection.length;
 

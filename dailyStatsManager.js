@@ -92,7 +92,7 @@ function recordSentItems(products) {
     });
 
     saveStats(stats);
-    console.log(`📊 Stats atualizadas: Total Hoje ${stats.total}/135`);
+    console.log(`📊 Stats atualizadas: Total Hoje ${stats.total}/165`);
 }
 
 /**
@@ -103,18 +103,18 @@ function getRemainingQuotas() {
 
     // Metas Diárias (TOTAL 106)
     const DAILY_GOALS = {
-        total: 135,
+        total: 165,
         stores: {
-            farm: 75,
-            dressto: 30,
-            kju: 15,
-            live: 15,
-            zzmall: 10
+            farm: 115,
+            dressto: 22,
+            kju: 10,
+            live: 12,
+            zzmall: 6
         },
         farmCategories: {
-            vestido: 45, // ~60% of 75
-            macacão: 18, // ~25% of 75
-            outros: 12   // ~15% of 75
+            vestido: 70, // ~60% of 115
+            macacão: 29, // ~25% of 115
+            outros: 16   // ~15% of 115
         }
     };
 
