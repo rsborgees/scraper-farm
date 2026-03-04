@@ -79,19 +79,6 @@ function filterEligibleProducts(products) {
  * @param {Object} dailyRemaining Quotas restantes do dia (opcional)
  */
 function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
-    // 1. FILTRO: Remove Favoritos e Novidades (Não devem ir no horário, A MENOS QUE SEJAM BAZAR ou DRESS TO)
-    const eligible = allProducts.filter(p => {
-        const isBazar = p.bazar || p.isBazar;
-        const s = (p.loja || p.brand || '').toLowerCase();
-        const isDressTo = s === 'dress' || s === 'dressto';
-
-        // Se for Bazar ou Dress To, permitimos passar (Dress To é Drive-Only e precisa preencher cota)
-        if (isBazar || isDressTo) return true;
-
-        const isFavOrNov = p.favorito || p.isFavorito || p.novidade || p.isNovidade;
-        return !isFavOrNov;
-    });
-
     const finalSelection = [];
     const selectedIds = new Set();
 
@@ -112,8 +99,8 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         return (rem - roundCounts[store]) > 0;
     };
 
-    // 2. SELEÇÃO BAZAR (Exatamente 1 item por execução, prioridade FARM)
-    const bazarPool = eligible.filter(p => p.bazar || p.isBazar);
+    // 1. SELEÇÃO BAZAR (Exatamente 1 item por execução, prioridade FARM)
+    const bazarPool = allProducts.filter(p => p.bazar || p.isBazar);
     console.log(`📊 [Distribution] Pool de Bazar: ${bazarPool.length} itens.`);
 
     if (bazarPool.length > 0) {
@@ -143,9 +130,19 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         }
     }
 
-    // 3. SELEÇÃO REGULAR (Até atingir TOTAL_LINKS)
-    // Filtramos o regularPool para NÃO incluir quem já foi selecionado como Bazar
-    const regularPool = eligible.filter(p => !selectedIds.has(p.id) && !p.bazar && !p.isBazar);
+    // 2. SELEÇÃO REGULAR (Itens que NÃO são bazar E QUE NÃO são favoritos/novidades)
+    // Para Dress To, permitimos favoritos/novidades no regularPool pois é Drive-Only.
+    const regularPool = allProducts.filter(p => {
+        if (selectedIds.has(p.id)) return false;
+        if (p.bazar || p.isBazar) return false;
+
+        const s = (p.loja || p.brand || '').toLowerCase();
+        const isDressTo = s === 'dress' || s === 'dressto';
+        if (isDressTo) return true; // DressTo always eligible in regular pool
+
+        const isFavOrNov = p.favorito || p.isFavorito || p.novidade || p.isNovidade;
+        return !isFavOrNov; // Other stores must be fresh
+    });
 
     // PRIORIDADES E QUOTAS
     const mainStores = ['farm', 'dressto', 'kju', 'live'];
@@ -204,17 +201,17 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         }
     }
 
-    // 4. Preenchimento de segurança se não atingiu ~11 itens
+    // 3. FILLER (Se ainda houver gap, usa Favoritos de qualquer loja ou Bazar extras)
     if (finalSelection.length < TOTAL_LINKS) {
         let gap = TOTAL_LINKS - finalSelection.length;
-        const priorityExtras = regularPool.filter(p => {
+        const fillerPool = allProducts.filter(p => {
             if (selectedIds.has(p.id)) return false;
             const s = (p.brand || p.loja || '').toLowerCase();
             const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
             return hasDailySaldo(storeKey);
         });
 
-        priorityExtras.slice(0, gap).forEach(p => {
+        fillerPool.slice(0, gap).forEach(p => {
             finalSelection.push(p);
             selectedIds.add(p.id);
             const s = (p.brand || p.loja || '').toLowerCase();

@@ -152,9 +152,8 @@ async function runAllScrapers(overrideQuotas = null) {
 
                     console.log(`📊 [FARM] ${sortedFarmDriveItems.length} itens disponíveis no Drive (${farmDriveItems.filter(i => i.novidade).length} novidades, ${farmDriveItems.filter(i => i.isFavorito).length} favoritos)`);
 
-                    // O scraper interno vai respeitar a quota da FARM
-                    // GARANTIA: Mínimo 9 para preencher a cota de 7 com segurança
-                    const farmQuota = Math.max(quotas.farm || 0, 9);
+                    // GARANTIA: Mínimo 25 para garantir que tenhamos itens REGULARES além dos BAZAR
+                    const farmQuota = Math.max(quotas.farm || 0, 25);
 
                     // Reutiliza o browser instanciado
                     // UPDATE: Agora retorna objeto com stats
@@ -207,11 +206,9 @@ async function runAllScrapers(overrideQuotas = null) {
                 // require ja no topo
 
                 for (const store of otherStores) {
-                    // Filtra favoritos e novidades (A MENOS QUE SEJA BAZAR)
-                    const items = (driveItemsByStore[store] || []).filter(item => {
-                        if (item.bazar) return true;
-                        return !item.isFavorito && !item.novidade;
-                    });
+                    const items = (driveItemsByStore[store] || []);
+                    // Removemos o filtro restritivo de favoritos/novidade aqui, 
+                    // deixamos o distributionEngine decidir o que enviar.
 
                     if (items.length > 0) {
                         const limitedItems = items
@@ -265,9 +262,7 @@ async function runAllScrapers(overrideQuotas = null) {
                 if (dressItems && dressItems.length > 0) {
                     console.log(`🔍 [DRESSTO] Iniciando Drive-First (${dressItems.length} itens)...`);
 
-                    // Passo 1: Sem repetição recente (48h default) e SEM Favoritos/Novidades (A MENOS QUE SEJA BAZAR)
                     let candidates = dressItems.filter(item => {
-                        if ((item.isFavorito || item.novidade) && !item.bazar) return false;
                         const finalId = item.driveId || item.id;
                         return !isDuplicate(finalId, { force: false, maxAgeHours: 48 });
                     });
