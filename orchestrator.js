@@ -146,11 +146,19 @@ async function runAllScrapers(overrideQuotas = null) {
                 });
 
                 if (farmDriveItems.length > 0) {
-                    // Ordenar pela nova regra de prioridade
-                    const sortedFarmDriveItems = farmDriveItems
-                        .sort((a, b) => getPriorityScore(b, history) - getPriorityScore(a, history));
+                    // ESTRATÉGIA: Garantir mix de Bazar e Regular no Scrape
+                    const bazars = farmDriveItems.filter(i => i.bazar).sort((a, b) => getPriorityScore(b, history) - getPriorityScore(a, history));
+                    const regulars = farmDriveItems.filter(i => !i.bazar).sort((a, b) => getPriorityScore(b, history) - getPriorityScore(a, history));
 
-                    console.log(`📊 [FARM] ${sortedFarmDriveItems.length} itens disponíveis no Drive (${farmDriveItems.filter(i => i.novidade).length} novidades, ${farmDriveItems.filter(i => i.isFavorito).length} favoritos)`);
+                    // Intercalar para garantir que o 'farmQuota' pegue de ambos
+                    const sortedFarmDriveItems = [];
+                    let bIdx = 0, rIdx = 0;
+                    while (sortedFarmDriveItems.length < farmDriveItems.length) {
+                        if (bIdx < bazars.length) sortedFarmDriveItems.push(bazars[bIdx++]);
+                        if (rIdx < regulars.length) sortedFarmDriveItems.push(regulars[rIdx++]);
+                    }
+
+                    console.log(`📊 [FARM] ${farmDriveItems.length} totais: ${bazars.length} Bazar, ${regulars.length} Regular.`);
 
                     // GARANTIA: Mínimo 25 para garantir que tenhamos itens REGULARES além dos BAZAR
                     const farmQuota = Math.max(quotas.farm || 0, 25);
