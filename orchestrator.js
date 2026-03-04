@@ -166,9 +166,11 @@ async function runAllScrapers(overrideQuotas = null) {
                             const prodBase = normalizeId(p.id).split('_')[0];
                             return driveBase === prodBase;
                         });
-                        p.bazar = !!driveItem.bazar;
+                        p.bazar = !!(driveItem && driveItem.bazar);
                         p.isBazar = p.bazar;
                         p.bazarFavorito = driveItem ? !!driveItem.bazarFavorito : false;
+                        p.favorito = driveItem ? !!driveItem.isFavorito : false;
+                        p.isFavorito = p.favorito;
                         p.message = buildFarmMessage(p, p.timerData);
                     });
 
@@ -186,6 +188,7 @@ async function runAllScrapers(overrideQuotas = null) {
                             p.bazar = !!driveItem.bazar;
                             p.isBazar = p.bazar;
                             p.favorito = !!driveItem.isFavorito;
+                            p.isFavorito = p.favorito;
                         }
                     });
 
@@ -240,7 +243,7 @@ async function runAllScrapers(overrideQuotas = null) {
                             const driveItem = limitedItems.find(item => normalizeId(item.id) === normalizeId(p.id));
                             p.bazar = !!(p.bazar || driveItem?.bazar);
                             p.isBazar = p.bazar;
-                            p.bazarFavorito = p.bazarFavorito || (p.bazar && p.favorito) || false;
+                            p.bazarFavorito = !!(p.bazarFavorito || (p.bazar && p.favorito));
                         });
 
                         allProducts.push(...scrapedItems);
@@ -543,7 +546,9 @@ async function runAllScrapers(overrideQuotas = null) {
                             else if (store === 'zzmall') p.message = buildZzMallMessage(p);
 
                             p.novidade = !!(p.novidade || p.isNovidade);
+                            p.isNovidade = p.novidade;
                             p.favorito = !!(p.favorito || p.isFavorito);
+                            p.isFavorito = p.favorito;
                             const driveItem = storeItems.find(item => normalizeId(item.id) === normalizeId(p.id));
                             p.bazar = !!(p.bazar || driveItem?.bazar);
                             p.isBazar = p.bazar;

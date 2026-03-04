@@ -79,11 +79,17 @@ function filterEligibleProducts(products) {
  * @param {Object} dailyRemaining Quotas restantes do dia (opcional)
  */
 function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
-    // 1. FILTRO: Remove Favoritos e Novidades (Não devem ir no horário, A MENOS QUE SEJAM BAZAR)
+    // 1. FILTRO: Remove Favoritos e Novidades (Não devem ir no horário, A MENOS QUE SEJAM BAZAR ou DRESS TO)
     const eligible = allProducts.filter(p => {
-        const isFavOrNov = p.favorito || p.isFavorito || p.novidade || p.isNovidade;
         const isBazar = p.bazar || p.isBazar;
-        return isBazar || !isFavOrNov;
+        const s = (p.loja || p.brand || '').toLowerCase();
+        const isDressTo = s === 'dress' || s === 'dressto';
+
+        // Se for Bazar ou Dress To, permitimos passar (Dress To é Drive-Only e precisa preencher cota)
+        if (isBazar || isDressTo) return true;
+
+        const isFavOrNov = p.favorito || p.isFavorito || p.novidade || p.isNovidade;
+        return !isFavOrNov;
     });
 
     const finalSelection = [];
@@ -108,7 +114,8 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
 
     // 2. SELEÇÃO BAZAR (Exatamente 1 item por execução, prioridade FARM)
     const bazarPool = eligible.filter(p => p.bazar || p.isBazar);
-    console.log(`📊 [Distribution] Pool de Bazar: ${bazarPool.length} itens. (${bazarPool.map(p => p.id).join(', ')})`);
+    console.log(`📊 [Distribution] Pool de Bazar: ${bazarPool.length} itens.`);
+
     if (bazarPool.length > 0) {
         // Prioriza Farm se houver bazar e se Farm tiver saldo
         const farmBazar = bazarPool.find(p => (p.loja === 'farm' || (p.brand || '').toLowerCase() === 'farm') && hasDailySaldo('farm'));
@@ -121,26 +128,24 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
             // Pega o primeiro bazar disponível de uma loja que tenha saldo diário
             selectedBazar = bazarPool.find(p => {
                 const s = (p.brand || p.loja || '').toLowerCase();
-                const storeKey = s === 'dress' || s === 'dressto' ? 'dressto' : s;
+                const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
                 return hasDailySaldo(storeKey);
             });
-            if (selectedBazar) console.log(`✅ [Distribution] Selecionado Bazaar Outra Loja: ${selectedBazar.nome} (${selectedBazar.id})`);
+            if (selectedBazar) console.log(`✅ [Distribution] Selecionado Bazaar ${selectedBazar.loja}: ${selectedBazar.nome} (${selectedBazar.id})`);
         }
 
         if (selectedBazar) {
             finalSelection.push(selectedBazar);
             selectedIds.add(selectedBazar.id);
             const s = (selectedBazar.brand || selectedBazar.loja || '').toLowerCase();
-            const storeKey = s === 'dress' || s === 'dressto' ? 'dressto' : s;
+            const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
             if (roundCounts[storeKey] !== undefined) roundCounts[storeKey]++;
-        } else {
-            console.log(`⚠️ [Distribution] Nenhum item do Bazar pool foi selecionado (saldo diário esgotado para todas as lojas com bazar?).`);
         }
     }
 
-    // 3. SELEÇÃO REGULAR (Até atingir TOTAL_LINKS = 7)
-    // Regra: 7 Farm, 2 Dress To, 1 Kju, 1 Live
-    const regularPool = eligible.filter(p => !p.bazar);
+    // 3. SELEÇÃO REGULAR (Até atingir TOTAL_LINKS)
+    // Filtramos o regularPool para NÃO incluir quem já foi selecionado como Bazar
+    const regularPool = eligible.filter(p => !selectedIds.has(p.id) && !p.bazar && !p.isBazar);
 
     // PRIORIDADES E QUOTAS
     const mainStores = ['farm', 'dressto', 'kju', 'live'];
@@ -178,14 +183,12 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         if (!addedThisRound) break;
     }
 
-    // 2ª PASSAGEM: Se ainda houver vaga, tenta secundários ou sobra das principais (sem passar de 7)
+    // 2ª PASSAGEM: Se ainda houver vaga, tenta secundários ou sobra das principais
     if (finalSelection.length < TOTAL_LINKS) {
         const allStores = [...mainStores, ...secondaryStores];
         for (const store of allStores) {
             if (finalSelection.length >= TOTAL_LINKS) break;
-
-            // Se for secundário, respeita saldo diário
-            if (secondaryStores.includes(store) && !hasDailySaldo(store)) continue;
+            if (!hasDailySaldo(store)) continue;
 
             const nextItem = regularPool.find(p => {
                 if (selectedIds.has(p.id)) return false;
@@ -201,47 +204,23 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         }
     }
 
-    // 4. Preenchimento de segurança se não atingiu ~11 itens (SEM PASSAR DA QUOTA DIÁRIA)
+    // 4. Preenchimento de segurança se não atingiu ~11 itens
     if (finalSelection.length < TOTAL_LINKS) {
         let gap = TOTAL_LINKS - finalSelection.length;
-
-        // Tenta preencher primeiro com quem ainda NÃO atingiu sua quota da rodada (runQuotas)
         const priorityExtras = regularPool.filter(p => {
             if (selectedIds.has(p.id)) return false;
             const s = (p.brand || p.loja || '').toLowerCase();
-            const storeKey = s === 'dress' || s === 'dressto' ? 'dressto' : s;
-
-            const hasSaldo = hasDailySaldo(storeKey);
-            const underRoundQuota = roundCounts[storeKey] < (runQuotas[storeKey] || 0);
-            return hasSaldo && underRoundQuota;
+            const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
+            return hasDailySaldo(storeKey);
         });
 
         priorityExtras.slice(0, gap).forEach(p => {
             finalSelection.push(p);
             selectedIds.add(p.id);
             const s = (p.brand || p.loja || '').toLowerCase();
-            const storeKey = s === 'dress' || s === 'dressto' ? 'dressto' : s;
+            const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
             roundCounts[storeKey]++;
         });
-
-        // Se ainda houver gap, preenche com QUALQUER um que tenha saldo diário (Regular ou Bazar)
-        if (finalSelection.length < TOTAL_LINKS) {
-            gap = TOTAL_LINKS - finalSelection.length;
-            const remainingExtras = eligible.filter(p => { // Alterado de regularPool para eligible
-                if (selectedIds.has(p.id)) return false;
-                const s = (p.brand || p.loja || '').toLowerCase();
-                const storeKey = s === 'dress' || s === 'dressto' ? 'dressto' : s;
-                return hasDailySaldo(storeKey);
-            });
-
-            remainingExtras.slice(0, gap).forEach(p => {
-                finalSelection.push(p);
-                selectedIds.add(p.id);
-                const s = (p.brand || p.loja || '').toLowerCase();
-                const storeKey = s === 'dress' || s === 'dressto' ? 'dressto' : s;
-                roundCounts[storeKey]++;
-            });
-        }
     }
 
     return shuffle(finalSelection);
