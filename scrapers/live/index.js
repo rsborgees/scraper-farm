@@ -431,7 +431,11 @@ async function parseProductLive(page, url) {
 
             console.log('DEBUG: Tamanhos encontrados:', tamanhos);
 
-            // 🚫 VALIDAÇÃO: Rejeitar roupas que só têm PP ou só têm GG (se houver PP+GG é válido)
+            // 🚫 VALIDAÇÃO: Rejeitar produtos sem tamanho (Esgotados) ou que só têm PP ou só têm GG
+            if (tamanhos.length === 0) {
+                return null; // Reject out-of-stock items
+            }
+
             if (tamanhos.length > 0) {
                 const uniqueSizesNormalized = [...new Set(tamanhos.map(s => s.toUpperCase().trim()))];
                 const isOnlyPP = uniqueSizesNormalized.length === 1 && uniqueSizesNormalized[0] === 'PP';

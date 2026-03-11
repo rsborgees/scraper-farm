@@ -176,36 +176,11 @@ async function runAllScrapers(overrideQuotas = null) {
                     const { products: scrapedDriveItems, attemptedIds, stats } = await scrapeSpecificIds(context, sortedFarmDriveItems, farmQuota);
 
                     scrapedDriveItems.forEach(p => {
-                        const driveItem = sortedFarmDriveItems.find(i => {
-                            const driveBase = normalizeId(i.id).split('_')[0];
-                            const prodBase = normalizeId(p.id).split('_')[0];
-                            return driveBase === prodBase;
-                        });
-                        p.bazar = !!(driveItem && driveItem.bazar);
-                        p.isBazar = p.bazar;
-                        p.bazarFavorito = driveItem ? !!driveItem.bazarFavorito : false;
-                        p.favorito = driveItem ? !!driveItem.isFavorito : false;
-                        p.isFavorito = p.favorito;
                         p.message = buildFarmMessage(p, p.timerData);
                     });
 
                     allProducts.push(...scrapedDriveItems);
                     driveProducts.push(...scrapedDriveItems);
-
-                    // Propagar flags (FAVORITO/BAZAR) do Drive para o produto final
-                    scrapedDriveItems.forEach(p => {
-                        const driveItem = farmDriveItems.find(i => {
-                            const driveBase = normalizeId(i.id).split('_')[0];
-                            const prodBase = normalizeId(p.id).split('_')[0];
-                            return driveBase === prodBase;
-                        });
-                        if (driveItem) {
-                            p.bazar = !!driveItem.bazar;
-                            p.isBazar = p.bazar;
-                            p.favorito = !!driveItem.isFavorito;
-                            p.isFavorito = p.favorito;
-                        }
-                    });
 
                     // TRACK UNUSED
                     const pickedIds = new Set(scrapedDriveItems.map(p => normalizeId(p.id)));

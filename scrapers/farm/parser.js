@@ -374,7 +374,7 @@ async function parseProduct(page, url) {
             // FALLBACK PARA TAMANHOS
             if (uniqueSizes.length === 0) {
                 // SÓ assume UN se for acessório ou categoria desconhecida que não parece roupa
-                const clothingCategoriesList = ['vestido', 'macacão', 'saia', 'short', 'blusa', 'calça', 'macaquinho'];
+                const clothingCategoriesList = ['vestido', 'macacão', 'saia', 'short', 'blusa', 'calça', 'macaquinho', 'conjunto', 'casaco', 'top/body', 'banho'];
 
                 if (clothingCategoriesList.includes(category)) {
                     // É roupa e não tem tamanho -> Provavelmente ESGOTADO
