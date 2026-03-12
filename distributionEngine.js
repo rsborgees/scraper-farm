@@ -189,7 +189,10 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
     }
 
     // 2ª PASSAGEM: Se ainda houver vaga, tenta secundários ou sobra das principais
-    if (finalSelection.length < TOTAL_LINKS) {
+    iterations = 0;
+    while (finalSelection.length < TOTAL_LINKS && iterations < 50) {
+        iterations++;
+        let addedThisRound = false;
         const allStores = [...mainStores, ...secondaryStores];
         for (const store of allStores) {
             if (finalSelection.length >= TOTAL_LINKS) break;
@@ -205,8 +208,10 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
                 finalSelection.push(nextItem);
                 selectedIds.add(nextItem.id);
                 roundCounts[store]++;
+                addedThisRound = true;
             }
         }
+        if (!addedThisRound) break;
     }
 
     // 3. FILLER (Se ainda houver gap, usa Favoritos de qualquer loja ou Bazar extras)
@@ -216,18 +221,21 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
             if (selectedIds.has(p.id)) return false;
             const s = (p.brand || p.loja || '').toLowerCase();
             const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-            return hasDailySaldo(storeKey);
+            if (!hasDailySaldo(storeKey)) return false;
+
+            // REGRAS FILLER FARM PRE-FILTER:
+            // 1. Não pega mais Bazar se já enviou 1
+            if (storeKey === 'farm' && (p.bazar || p.isBazar) && roundCounts.farm >= 1) return false;
+            // 2. Nunca pega favorito/novidade no horário (mesmo se sobrar vaga)
+            if (storeKey === 'farm' && (p.favorito || p.isFavorito || p.novidade || p.isNovidade)) return false;
+
+            return true;
         });
 
+        // Agora fillerPool já tem só itens válidos e aceitos
         fillerPool.slice(0, gap).forEach(p => {
             const s = (p.brand || p.loja || '').toLowerCase();
             const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-
-            // REGRAS FILLER FARM:
-            // 1. Não pega mais Bazar se já enviou 1
-            if (storeKey === 'farm' && (p.bazar || p.isBazar) && roundCounts.farm >= 1) return;
-            // 2. Nunca pega favorito/novidade no horário (mesmo se sobrar vaga)
-            if (storeKey === 'farm' && (p.favorito || p.isFavorito || p.novidade || p.isNovidade)) return;
 
             finalSelection.push(p);
             selectedIds.add(p.id);
