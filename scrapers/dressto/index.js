@@ -221,11 +221,7 @@ async function scrapeDressTo(quota = 18, parentBrowser = null) {
                             product.loja = 'dressto';
                             product.isSiteNovidade = true;
 
-                            // 🏷️ LOGICA DE DESCONTO AUTOMATICO: 10% em itens sem desconto
-                            if (product.precoOriginal === product.precoAtual) {
-                                product.precoAtual = Math.round(product.precoOriginal * 0.9);
-                                console.log(`      🏷️ Aplicado 10% de desconto automático: R$${product.precoOriginal} -> R$${product.precoAtual}`);
-                            }
+                            // Removido logic de desconto automático de 10% porque agora o parser.js faz isso centralizado
 
                             product.desconto = 0; // O parser ou orchestrator pode re-calcular isso baseado no de/por
                             product.imagePath = imagePath || 'error.jpg';

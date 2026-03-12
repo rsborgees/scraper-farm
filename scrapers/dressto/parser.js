@@ -145,6 +145,12 @@ async function fetchViaVtexAPI(searchKey) {
             imageUrl: (item.images && item.images.length) ? item.images[0].imageUrl : null
         };
 
+        // Aplica 10% de desconto se não houver desconto da loja
+        if (result.precoAtual === result.precoOriginal) {
+            result.precoAtual = Number((result.precoAtual * 0.9).toFixed(2));
+            console.log(`      🏷️ [SERVER-SIDE] Aplicando 10% de desconto extra. Preço final: ${result.precoAtual}`);
+        }
+
         console.log(`      ✅ [SERVER-SIDE] Produto extraído via API: ${result.nome}`);
         return result;
 
@@ -459,6 +465,12 @@ async function parseProductDressTo(page, url) {
         });
 
         if (data) {
+            // Aplica 10% de desconto se não houver desconto da loja
+            if (data.precoAtual === data.precoOriginal) {
+                data.precoAtual = Number((data.precoAtual * 0.9).toFixed(2));
+                console.log(`      🏷️ Aplicando 10% de desconto extra. Preço final: ${data.precoAtual}`);
+            }
+
             console.log(`✅ Dress To: ${data.nome} | R$${data.precoAtual}`);
         }
 
