@@ -1,4 +1,5 @@
-const { initBrowser } = require('../../browser_setup');
+const { initPuppeteer } = require('./init_puppeteer');
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const path = require('path');
 const fs = require('fs');
 const { processProductUrl, processImageDirect } = require('../../imageDownloader');
@@ -24,7 +25,7 @@ async function scrapeLive(quota = 6, ignoreDuplicates = false, parentBrowser = n
         browser = parentBrowser;
         page = await browser.newPage();
     } else {
-        ({ browser, page } = await initBrowser());
+        ({ browser, page } = await initPuppeteer());
         shouldCloseBrowser = true;
     }
 
@@ -33,14 +34,14 @@ async function scrapeLive(quota = 6, ignoreDuplicates = false, parentBrowser = n
         console.log(`   🔗 Navegando para: ${targetUrl}`);
 
         await page.goto(targetUrl, {
-            waitUntil: 'load',
+            waitUntil: 'networkidle2',
             timeout: 60000
         });
 
         // Espera inicial para shields/popups renderizarem
-        await page.waitForTimeout(3000 + Math.random() * 3000);
+        await sleep(3000 + Math.random() * 3000);
 
-        await page.waitForTimeout(5000);
+        await sleep(5000);
 
         // 🛡️ Fecha popups/modais iniciais (Refinado)
         console.log('   🛡️ Verificando popups...');
@@ -71,7 +72,7 @@ async function scrapeLive(quota = 6, ignoreDuplicates = false, parentBrowser = n
             });
             if (closeBtn) closeBtn.click();
         });
-        await page.waitForTimeout(3000);
+        await sleep(3000);
 
         if (!fs.existsSync(DEBUG_DIR)) fs.mkdirSync(DEBUG_DIR, { recursive: true });
         await page.screenshot({ path: path.join(DEBUG_DIR, 'live_list.png') });
@@ -119,7 +120,7 @@ async function scrapeLive(quota = 6, ignoreDuplicates = false, parentBrowser = n
         for (const url of productUrls) {
             if (products.length >= quota * 3) break;
             console.log(`\n   🔎 Processando: ${url}`);
-            await page.waitForTimeout(1000 + Math.random() * 2000);
+            await sleep(1000 + Math.random() * 2000);
             const product = await parseProductLive(page, url);
             if (!product) continue;
 
@@ -226,8 +227,8 @@ async function scrapeLive(quota = 6, ignoreDuplicates = false, parentBrowser = n
 
 async function parseProductLive(page, url) {
     try {
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
-        await page.waitForTimeout(5000); // Increased wait time for content to load
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 45000 });
+        await sleep(4000 + Math.random() * 2000); // Increased wait time with human random delay
 
         const data = await page.evaluate(() => {
             const getSafeText = (el) => {

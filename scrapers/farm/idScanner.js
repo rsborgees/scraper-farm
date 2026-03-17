@@ -107,13 +107,19 @@ async function scrapeSpecificIds(contextOrBrowser, driveItems, quota = 999, opti
                         // If fastProduct has an error (like OOS or forbidden category), we can skip it entirely
                         if (fastProduct && fastProduct.error) {
                             console.log(`      ❌ [FastAPI] Descartado: ${fastProduct.error}`);
-                            // If it's a "known" error like OOS, we don't treat it as a hard error for stats
+                            // If it's a "known" error like OOS, or a SOFT error, we don't treat it as a hard error for stats
                             if (fastProduct.error.includes('ESGOTADO') || fastProduct.error.includes('bloqueado')) {
                                 itemNotFound = true;
+                            } else if (fastProduct.isSoftError) {
+                                // Do not skip entirely, allow fallback to DOM parsing
+                                console.log(`      🔄 [Worker ${workerId}] Fallback para navegação (FastAPI retornou erro leve)`);
                             } else {
                                 itemHasError = true;
+                                continue;
                             }
-                            continue;
+                            
+                            // If it's not a soft error, continue the loop (skip item)
+                            if (!fastProduct.isSoftError) continue;
                         }
 
                         // If fastProduct is valid and complete, we use it and skip navigation!
@@ -124,11 +130,17 @@ async function scrapeSpecificIds(contextOrBrowser, driveItems, quota = 999, opti
                         }
 
                         // Fallback to DOM parsing if fastParse was inconclusive but didn't error out
-                        const productLink = productData.link;
-                        if (!productLink) {
-                            console.error(`      ❌ [Worker ${workerId}] Link não encontrado no JSON.`);
-                            itemHasError = true;
-                            continue;
+                        let productLink = productData.link;
+                        
+                        // If link is a function or invalid string, try constructing it from name
+                        if (typeof productLink !== 'string' || !productLink) {
+                            if (productData.linkText) {
+                                productLink = `https://www.farmrio.com.br/${productData.linkText}/p`;
+                            } else {
+                                console.error(`      ❌ [Worker ${workerId}] Link não pôde ser resolvido.`);
+                                itemHasError = true;
+                                continue;
+                            }
                         }
 
                         await page.goto(productLink, { waitUntil: 'domcontentloaded', timeout: 30000 });
@@ -253,7 +265,7 @@ function fastParseFromApi(productData, isFavorito = false) {
     const nameLower = name.toLowerCase();
 
     if (!name || !urlLower) {
-        return { error: 'Nome ou Link ausente na API' };
+        return { error: 'Nome ou Link ausente na API', isSoftError: true };
     }
 
     // 1. FILTRO ANTI-INFANTIL (Fábula / Bento / Teen / Mini / Kids)
