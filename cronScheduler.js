@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { runAllScrapers } = require('./orchestrator');
 const { checkFarmTimer } = require('./scrapers/farm/timer_check');
+const { supabase } = require('./supabaseClient');
 
 
 const { getPromoSummary } = require('./scrapers/farm/promoScanner');
@@ -12,6 +13,142 @@ const { getPromoSummary } = require('./scrapers/farm/promoScanner');
 const WEBHOOK_URL = 'https://n8n-francalheira.vlusgm.easypanel.host/webhook/1959ec08-24d1-4402-b458-8b56b8211caa';
 const DAILY_WEBHOOK_URL = "https://n8n-francalheira.vlusgm.easypanel.host/webhook/922595b8-a675-4e9e-8493-f3e734f236af";
 const DRIVE_SYNC_WEBHOOK_URL = "https://n8n-francalheira.vlusgm.easypanel.host/webhook/fav-fran";
+
+/**
+ * Busca estatísticas detalhadas da tabela 'produtos' no Supabase
+ */
+async function getSupabaseStats() {
+    try {
+        const { data, error } = await supabase
+            .from('produtos')
+            .select('loja, payload');
+
+        if (error) throw error;
+
+        const stats = {
+            total: data.length,
+            stores: { farm: 0, dressto: 0, live: 0, kju: 0, zzmall: 0 },
+            bazar: 0
+        };
+
+        data.forEach(item => {
+            const store = (item.loja || '').toLowerCase();
+            const storeKey = (store === 'dress' || store === 'dressto') ? 'dressto' : store;
+            if (stats.stores[storeKey] !== undefined) {
+                stats.stores[storeKey]++;
+            }
+            // Verifica bazar no payload
+            if (item.payload && (item.payload.bazar || item.payload.isBazar)) {
+                stats.bazar++;
+            }
+        });
+
+        return stats;
+    } catch (error) {
+        console.error('❌ Erro ao buscar estatísticas no Supabase:', error.message);
+        return { total: 0, stores: { farm: 0, dressto: 0, live: 0, kju: 0, zzmall: 0 }, bazar: 0 };
+    }
+}
+
+/**
+ * Calcula as quotas dinâmicas baseadas no estado atual do banco
+ */
+function calculateDynamicQuotas(currentStats) {
+    const GLOBAL_TARGET = 158;
+    const IDEAL_TARGETS = {
+        farm: Math.round(GLOBAL_TARGET * 0.70),    // 111
+        dressto: Math.round(GLOBAL_TARGET * 0.15), // 24
+        live: Math.round(GLOBAL_TARGET * 0.08),    // 13
+        kju: Math.round(GLOBAL_TARGET * 0.05),     // 8
+        zzmall: Math.round(GLOBAL_TARGET * 0.02)   // 3
+    };
+
+    console.log('\n📊 [DynamicBalancing] Estado atual vs Meta (158):');
+    const needed = {};
+    let totalNeeded = 0;
+
+    Object.keys(IDEAL_TARGETS).forEach(store => {
+        const current = currentStats.stores[store] || 0;
+        const target = IDEAL_TARGETS[store];
+        const diff = Math.max(0, target - current);
+        needed[store] = diff;
+        totalNeeded += diff;
+        console.log(`   🔸 ${store.toUpperCase().padEnd(7)}: ${String(current).padStart(3)} / ${target} (Falta: ${diff})`);
+    });
+
+    // Se precisamos de menos de 11 itens para fechar os 158, usamos o totalNeeded como limite da run
+    // Caso contrário, usamos o padrão de ~11 itens por run distribuídos proporcionalmente ao gap
+    const SESSION_CAPACITY = 11;
+    const sessionQuotas = {};
+
+    if (totalNeeded <= SESSION_CAPACITY) {
+        // Se falta pouco, tenta pegar exatamente o que falta
+        Object.assign(sessionQuotas, needed);
+    } else {
+        // Distribui a capacidade da sessão (11) entre as lojas que mais precisam
+        // Prioridade simples para as lojas com maiores gaps
+        const sortedStores = Object.keys(needed).sort((a, b) => needed[b] - needed[a]);
+        let distributed = 0;
+        
+        // 1ª passada: Garante pelo menos 1 para cada loja que precisa (se houver vaga)
+        sortedStores.forEach(store => {
+            if (needed[store] > 0 && distributed < SESSION_CAPACITY) {
+                sessionQuotas[store] = (sessionQuotas[store] || 0) + 1;
+                distributed++;
+            }
+        });
+
+        // 2ª passada: Distribui o resto proporcionalmente ou por prioridade de gap
+        let idx = 0;
+        while (distributed < SESSION_CAPACITY) {
+            const store = sortedStores[idx % sortedStores.length];
+            if (sessionQuotas[store] < needed[store]) {
+                sessionQuotas[store]++;
+                distributed++;
+            } else if (idx > sortedStores.length * 2) {
+                break; // Proteção contra loop
+            }
+            idx++;
+        }
+    }
+
+    // Garantir que todas as chaves existam para o orchestrator
+    ['farm', 'dressto', 'kju', 'live', 'zzmall'].forEach(s => {
+        if (sessionQuotas[s] === undefined) sessionQuotas[s] = 0;
+    });
+
+    console.log(`🎯 [DynamicBalancing] Meta para esta execução: `, sessionQuotas);
+    return sessionQuotas;
+}
+
+/**
+ * Salva os produtos no Supabase
+ */
+async function saveToSupabase(products) {
+    if (!products || products.length === 0) return;
+
+    try {
+        const dataToInsert = products.map(p => ({
+            id_referencia: p.id,
+            nome: p.nome,
+            loja: p.loja || p.brand,
+            preco: p.preco,
+            url: p.url || p.link,
+            imagem_url: p.imageUrl,
+            payload: p,
+            timestamp: new Date().toISOString()
+        }));
+
+        const { error } = await supabase
+            .from('produtos')
+            .upsert(dataToInsert, { onConflict: 'id_referencia' });
+
+        if (error) throw error;
+        console.log(`✅ ${products.length} itens salvos/atualizados no Supabase.`);
+    } catch (error) {
+        console.error('❌ Erro ao salvar no Supabase:', error.message);
+    }
+}
 
 /**
  * Envia o resumo diário de promoções (Job das 09h)
@@ -59,6 +196,17 @@ async function runDailyDriveSyncJob() {
     console.log('='.repeat(60) + '\n');
 
     try {
+        // 0. Verificar limite no Supabase
+        const currentStats = await getSupabaseStats();
+        console.log(`📊 [LimitCheck] Itens no banco: ${currentStats.total}/158`);
+        
+        if (currentStats.total >= 158) {
+            console.log('⚠️ [LimitCheck] Limite de 158 peças atingido. Job de 05h cancelado.');
+            return;
+        }
+
+        const runQuotas = calculateDynamicQuotas(currentStats);
+
         const { getExistingIdsFromDrive } = require('./driveManager');
         const { scrapeSpecificIds } = require('./scrapers/farm/idScanner');
         const { scrapeSpecificIdsGeneric } = require('./scrapers/idScanner');
@@ -113,8 +261,16 @@ async function runDailyDriveSyncJob() {
             const stores = [...new Set(targetItems.map(item => item.store))];
 
             for (const store of stores) {
-                const storeItems = targetItems.filter(item => item.store === store);
-                console.log(`\n🔍 Processando ${storeItems.length} itens da ${store.toUpperCase()}...`);
+                const storeQuota = runQuotas[store] || 0;
+                if (storeQuota <= 0) {
+                    console.log(`   ⏭️ [${store.toUpperCase()}] Cota dinâmica atingida no Supabase. Pulando.`);
+                    continue;
+                }
+
+                const storeItems = targetItems.filter(item => item.store === store).slice(0, storeQuota);
+                if (storeItems.length === 0) continue;
+
+                console.log(`\n🔍 Processando ${storeItems.length} itens da ${store.toUpperCase()} (Cota: ${storeQuota})...`);
 
                 let scraped;
                 if (store === 'farm') {
@@ -161,6 +317,9 @@ async function runDailyDriveSyncJob() {
                 });
 
                 console.log('✅ Drive Sync Job enviado com sucesso para o webhook!');
+
+                // 7. Salvar no Supabase
+                await saveToSupabase(results);
             }
 
         } finally {
@@ -251,8 +410,19 @@ async function runScheduledScraping() {
     console.log('='.repeat(60) + '\n');
 
     try {
-        // 1. Executa todos os scrapers
-        const allProducts = await runAllScrapers({ farm: 5, dressto: 0, kju: 0, live: 0, zzmall: 0 });
+        // 0. Verificar limite e calcular quotas inteligentes
+        const currentStats = await getSupabaseStats();
+        console.log(`📊 [LimitCheck] Itens no banco: ${currentStats.total}/158`);
+        
+        if (currentStats.total >= 158) {
+            console.log('⚠️ [LimitCheck] Limite de 158 peças atingido. Scraping cancelado.');
+            return { products: [], webhook: { success: false, reason: 'limit_reached' } };
+        }
+
+        const runQuotas = calculateDynamicQuotas(currentStats);
+
+        // 1. Executa todos os scrapers com quotas dinâmicas
+        const allProducts = await runAllScrapers(runQuotas);
 
         console.log('\n' + '='.repeat(60));
         console.log('📊 RESULTADO DO SCRAPING');
@@ -261,6 +431,11 @@ async function runScheduledScraping() {
 
         // 2. Envia para webhook
         const webhookResult = await sendToWebhook(allProducts);
+
+        // 3. Salvar no Supabase
+        if (allProducts.length > 0) {
+            await saveToSupabase(allProducts);
+        }
 
         console.log('\n' + '='.repeat(60));
         console.log('✅ SCRAPING AGENDADO CONCLUÍDO');

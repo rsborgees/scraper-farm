@@ -74,6 +74,9 @@ function getPriorityScore(item, history = {}) {
     // 4. Favoritos do Drive
     if (item.isFavorito || item.favorito) score += 500;
 
+    // ADDITION: Small random jitter to ensure rotation of items with same score (like never-sent ones)
+    score += Math.floor(Math.random() * 100);
+
     return score;
 }
 
@@ -142,7 +145,7 @@ async function runAllScrapers(overrideQuotas = null) {
                     
                     // Atualiza a quota local para refletir a nova meta se necessário
                     const newRemaining = require('./dailyStatsManager').getRemainingQuotas();
-                    quotas.dressto = Math.min(20, newRemaining.stores.dressto); 
+                    quotas.dressto = Math.min(2, newRemaining.stores.dressto); 
                 }
 
                 // FARM Drive Items (único scraper de ID implementado por enquanto)
@@ -198,8 +201,8 @@ async function runAllScrapers(overrideQuotas = null) {
                     const normals = farmDriveItems.filter(i => !i.bazar).sort((a, b) => getPriorityScore(b, history) - getPriorityScore(a, history));
 
                     // Intercalar para garantir que o 'farmQuota' pegue de ambos
-                    // Aumentar o pool de Bazar para 15. Bazar fica muito sem estoque, então precisamos testar mais peças para achar 1 válida.
-                    const maxBazars = 15;
+                    // Aumentar o pool de Bazar para 50. Bazar fica muito sem estoque, então precisamos testar mais peças para achar 1 válida.
+                    const maxBazars = 50;
                     const limitedBazars = bazars.slice(0, maxBazars);
 
                     const sortedFarmDriveItems = [];
@@ -214,9 +217,9 @@ async function runAllScrapers(overrideQuotas = null) {
 
                     console.log(`📊 [FARM] Totais no Drive: ${bazars.length} Bazar (Usando máx ${maxBazars}), ${normals.length} Regular.`);
 
-                    // GARANTIA: Mínimo 25 para garantir que tenhamos itens REGULARES além dos BAZAR
+                    // GARANTIA: Mínimo 60 para garantir que tenhamos itens REGULARES além dos BAZAR
                     // O farmQuota aqui é apenas para o SCRAPING, o distributionEngine aplicará a cota final de 7.
-                    const farmQuota = 25;
+                    const farmQuota = 60;
 
                     // Reutiliza o browser instanciado
                     // UPDATE: Agora retorna objeto com stats
@@ -260,7 +263,7 @@ async function runAllScrapers(overrideQuotas = null) {
 
                         // Usa o RUN_CAP do distributionEngine como quota: o scanner para cedo quando atingido
                         let currentQuota = RUN_CAPS[store] || quotas[store] || 1;
-                        if (store === 'dressto') currentQuota = Math.min(4, quotas.dressto || 4);
+                        if (store === 'dressto') currentQuota = Math.min(2, quotas.dressto || 2);
 
                         const { products: scrapedItems, stats } = await scrapeSpecificIdsGeneric(context, limitedItems, store, currentQuota);
 
@@ -326,7 +329,8 @@ async function runAllScrapers(overrideQuotas = null) {
                         .sort((a, b) => getPriorityScore(b, history) - getPriorityScore(a, history))
                         .slice(0, 50);
 
-                    const { products: scrapedItems, stats } = await scrapeSpecificIdsGeneric(context, limitedItems, 'dressto', quotas.dressto, { maxAgeHours: 24 }); // Permite fallback de 24h
+                    const dressQuota = Math.min(2, quotas.dressto || 2);
+                    const { products: scrapedItems, stats } = await scrapeSpecificIdsGeneric(context, limitedItems, 'dressto', dressQuota, { maxAgeHours: 24 }); // Permite fallback de 24h
 
                     scrapedItems.forEach(p => {
                         p.message = buildDressMessage(p);

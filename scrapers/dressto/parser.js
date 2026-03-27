@@ -121,7 +121,8 @@ async function fetchViaVtexAPI(searchKey) {
             return null;
         }
 
-        // 🚫 VALIDAÇÃO: Rejeitar roupas que só têm PP ou GG (sem P, M, G)
+        // 🚫 VALIDAÇÃO: Relaxada para Dress To cumprir cota
+        /*
         const clothingCategories = ['vestido', 'macacão', 'saia', 'short', 'blusa', 'calça', 'casaco'];
         if (clothingCategories.includes(categoria)) {
             const normalizedSizes = tamanhos.map(s => s.toUpperCase().trim());
@@ -133,6 +134,7 @@ async function fetchViaVtexAPI(searchKey) {
                 return null;
             }
         }
+        */
 
         const result = {
             id: pApi.productReference || searchKey,
@@ -323,7 +325,8 @@ async function parseProductDressTo(page, url) {
 
             if (tamanhos.length === 0) return null;
 
-            // 🚫 VALIDAÇÃO: Rejeitar roupas que só têm PP ou GG (sem P, M, G)
+            // 🚫 VALIDAÇÃO: Relaxada para Dress To cumprir cota
+            /*
             const hasClothingSizes = tamanhos.some(s => ['PP', 'P', 'M', 'G', 'GG'].includes(s.toUpperCase()));
             if (hasClothingSizes) {
                 const normalizedSizes = tamanhos.map(s => s.toUpperCase().trim());
@@ -334,6 +337,7 @@ async function parseProductDressTo(page, url) {
                     return null; // Reject clothing items with only PP or only GG
                 }
             }
+            */
 
             // Categoria
             let categoria = 'outros';
