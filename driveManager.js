@@ -117,6 +117,12 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                         const isBazar = nameLower.includes('bazar') || /(^|[^a-z0-9])bazar([^a-z0-9]|$)/i.test(nameLower);
                         const isBazarFavorito = isBazar && isFavorito;
 
+                        // 🌦️ SEASONAL FLAGS
+                        const isAltoVerao = nameLower.includes('alto verão');
+                        const isVerao = nameLower.includes('verão');
+                        const isAltoInverno = nameLower.includes('alto inverno');
+                        const isInverno = nameLower.includes('inverno');
+
                         // 🏪 DETECÇÃO DE LOJA pelo nome do arquivo
                         let store = null;
                         if (nameLower.includes('farm')) {
@@ -154,6 +160,10 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                                 novidade: isNovidade,
                                 bazar: isBazar,
                                 bazarFavorito: isBazarFavorito,
+                                verao: isVerao,
+                                altoVerao: isAltoVerao,
+                                inverno: isInverno,
+                                altoInverno: isAltoInverno,
                                 store: store,
                                 createdTime: createdTime
                             });
@@ -164,6 +174,12 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                         const isNovidade = nameLower.includes('novidade');
                         const isBazar = nameLower.includes('bazar') || /(^|[^a-z0-9])bazar([^a-z0-9]|$)/i.test(nameLower);
                         const isBazarFavorito = isBazar && isFavorito;
+
+                        // 🌦️ SEASONAL FLAGS
+                        const isAltoVerao = nameLower.includes('alto verão');
+                        const isVerao = nameLower.includes('verão');
+                        const isAltoInverno = nameLower.includes('alto inverno');
+                        const isInverno = nameLower.includes('inverno');
 
                         // Clean name for search
                         let cleanName = file.name.toLowerCase()
@@ -192,6 +208,10 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                                 novidade: isNovidade,
                                 bazar: isBazar,
                                 bazarFavorito: isBazarFavorito,
+                                verao: isVerao,
+                                altoVerao: isAltoVerao,
+                                inverno: isInverno,
+                                altoInverno: isAltoInverno,
                                 store: 'live',
                                 searchByName: true, // Flag to trigger name search
                                 createdTime: createdTime

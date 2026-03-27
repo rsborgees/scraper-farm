@@ -217,6 +217,10 @@ async function scrapeSpecificIdsGeneric(contextOrBrowser, driveItems, storeName,
                             product.bazar = !!item.bazar;
                             product.isBazar = product.bazar;
                             product.bazarFavorito = !!item.bazarFavorito;
+                            product.verao = !!item.verao;
+                            product.altoVerao = !!item.altoVerao;
+                            product.inverno = !!item.inverno;
+                            product.altoInverno = !!item.altoInverno;
                             product.loja = storeName;
                             product.id = item.driveId || product.id || item.id;
 
@@ -437,6 +441,10 @@ async function scrapeSpecificIdsGeneric(contextOrBrowser, driveItems, storeName,
                                 product.bazar = !!item.bazar;
                                 product.isBazar = product.bazar;
                                 product.bazarFavorito = !!item.bazarFavorito;
+                                product.verao = !!item.verao;
+                                product.altoVerao = !!item.altoVerao;
+                                product.inverno = !!item.inverno;
+                                product.altoInverno = !!item.altoInverno;
 
                                 const driveId = item.driveId || item.id;
                                 if (driveId) {

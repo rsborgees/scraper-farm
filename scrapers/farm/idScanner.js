@@ -214,6 +214,11 @@ async function scrapeSpecificIds(contextOrBrowser, driveItems, quota = 999, opti
                     finalProduct.isBazar = !!item.bazar;
                     finalProduct.bazarFavorito = !!item.bazarFavorito;
 
+                    finalProduct.verao = !!item.verao;
+                    finalProduct.altoVerao = !!item.altoVerao;
+                    finalProduct.inverno = !!item.inverno;
+                    finalProduct.altoInverno = !!item.altoInverno;
+
                     finalProduct.url = appendQueryParams(finalProduct.url, { utm_campaign: "7B1313" });
                     finalProduct.loja = 'farm';
                     if (item.driveId) finalProduct.id = item.driveId; // Use verbatim Drive ID (e.g. 355028)

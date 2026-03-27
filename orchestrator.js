@@ -283,6 +283,12 @@ async function runAllScrapers(overrideQuotas = null) {
                             p.bazar = !!(p.bazar || driveItem?.bazar);
                             p.isBazar = p.bazar;
                             p.bazarFavorito = !!(p.bazarFavorito || (p.bazar && p.favorito));
+
+                            // 🌦️ SEASONAL FLAGS
+                            p.verao = !!(p.verao || driveItem?.verao);
+                            p.altoVerao = !!(p.altoVerao || driveItem?.altoVerao);
+                            p.inverno = !!(p.inverno || driveItem?.inverno);
+                            p.altoInverno = !!(p.altoInverno || driveItem?.altoInverno);
                         });
 
                         allProducts.push(...scrapedItems);
@@ -342,6 +348,12 @@ async function runAllScrapers(overrideQuotas = null) {
                         p.bazar = !!(p.bazar || driveItem?.bazar);
                         p.isBazar = p.bazar;
                         p.bazarFavorito = !!(p.bazarFavorito || (p.bazar && p.favorito));
+                        
+                        // 🌦️ SEASONAL FLAGS
+                        p.verao = !!(p.verao || driveItem?.verao);
+                        p.altoVerao = !!(p.altoVerao || driveItem?.altoVerao);
+                        p.inverno = !!(p.inverno || driveItem?.inverno);
+                        p.altoInverno = !!(p.altoInverno || driveItem?.altoInverno);
                     });
 
                     allProducts.push(...scrapedItems);
@@ -590,6 +602,12 @@ async function runAllScrapers(overrideQuotas = null) {
                             p.bazar = !!(p.bazar || driveItem?.bazar);
                             p.isBazar = p.bazar;
                             p.bazarFavorito = !!(p.bazarFavorito || (p.bazar && p.favorito));
+
+                            // 🌦️ SEASONAL FLAGS
+                            p.verao = !!(p.verao || driveItem?.verao);
+                            p.altoVerao = !!(p.altoVerao || driveItem?.altoVerao);
+                            p.inverno = !!(p.inverno || driveItem?.inverno);
+                            p.altoInverno = !!(p.altoInverno || driveItem?.altoInverno);
                         });
 
                         const pickedIds = new Set(allProducts.map(p => p.id));

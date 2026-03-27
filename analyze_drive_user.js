@@ -3,7 +3,7 @@ require('dotenv').config();
 
 async function analyzeDrive() {
     const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
-    console.log(`📂 Analyzing Drive Folder: ${folderId}\n`);
+    console.log(` Analyzing Drive Folder: ${folderId}\n`);
 
     const items = await getExistingIdsFromDrive(folderId);
     const farmItems = items.filter(i => i.store === 'farm');
@@ -32,9 +32,26 @@ async function analyzeDrive() {
     userIds.forEach(uid => {
         const item = farmItems.find(fi => fi.ids.includes(uid) || fi.id === uid);
         if (item) {
-            console.log(`✅ ${uid}: Found in Drive. Favorito: ${item.isFavorito ? 'YES' : 'NO'}. Name: ${item.name}`);
+            const seasonFlags = [
+                item.verao ? '☀️ Verão' : null,
+                item.altoVerao ? '🔥 Alto Verão' : null,
+                item.inverno ? '❄️ Inverno' : null,
+                item.altoInverno ? '🌬️ Alto Inverno' : null
+            ].filter(Boolean).join(', ');
+            
+            console.log(`✅ ${uid}: Found in Drive. Favorito: ${item.isFavorito ? 'YES' : 'NO'}. Name: ${item.name} | Flags: ${seasonFlags || 'None'}`);
         } else {
             console.log(`❌ ${uid}: NOT FOUND in Drive folder.`);
+        }
+    });
+    console.log('\n--- Seasonal Flags Detection Check ---');
+    const seasons = ['verao', 'altoVerao', 'inverno', 'altoInverno'];
+    seasons.forEach(s => {
+        const found = items.find(item => item[s]);
+        if (found) {
+            console.log(`✅ Flag [${s}] works: Found "${found.name}"`);
+        } else {
+            console.log(`⚠️ Flag [${s}] not found in any filename in this folder.`);
         }
     });
 }
