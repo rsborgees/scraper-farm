@@ -288,6 +288,9 @@ async function parseProduct(page, url) {
             // Pega o texto do Breadcrumb se existir
             const breadcrumbEl = document.querySelector('.vtex-breadcrumb__container') || document.querySelector('[class*="breadcrumb"]');
             const breadcrumbText = breadcrumbEl ? getSafeText(breadcrumbEl).toLowerCase() : '';
+            
+            // NOVO: Detecção específica de Bazar Farm na barra de navegação
+            const isBazarFarm = breadcrumbText.includes('bazar farm');
 
             // Strict Text: Apenas áreas que REALMENTE definem o produto
             const strictText = (urlLower + ' ' + nameLower + ' ' + breadcrumbText);
@@ -478,7 +481,8 @@ async function parseProduct(page, url) {
                     precoAtual: precoAtual,
                     tamanhos: uniqueSizes,
                     categoria: category,
-                    bazar: isBazar,
+                    bazar: isBazarFarm, // NOVO: Reflete se está na categoria Bazar do site
+                    isBazarFarm: isBazarFarm, // NOVO
                     imageUrl: (function () {
                         const gallerySelectors = [
                             '.pixel-image',

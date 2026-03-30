@@ -168,9 +168,10 @@ async function scrapeSpecificIds(contextOrBrowser, driveItems, quota = 999, opti
                         const product = await parseProduct(page, page.url());
 
                         if (product) {
-                            product.bazar = !!item.bazar;
+                            // REGRA: Bazar se estiver em Ambos (Drive + Site)
+                            product.bazar = !!item.bazar && !!product.isBazarFarm;
                             product.isBazar = product.bazar;
-                            product.bazarFavorito = !!item.bazarFavorito;
+                            product.bazarFavorito = (!!item.bazarFavorito || (!!item.bazar && !!item.isFavorito)) && !!product.isBazarFarm;
                             mergedProducts.push(product);
                         }
 
@@ -209,10 +210,10 @@ async function scrapeSpecificIds(contextOrBrowser, driveItems, quota = 999, opti
                     finalProduct.novidade = item.novidade || false;
                     finalProduct.isNovidade = item.novidade || (finalProduct.isNovidade || false);
 
-                    // REGRA ESTRITA: Bazar vem UNICAMENTE do que está no Drive (BAZAR no nome da foto)
-                    finalProduct.bazar = !!item.bazar;
-                    finalProduct.isBazar = !!item.bazar;
-                    finalProduct.bazarFavorito = !!item.bazarFavorito;
+                    // REGRA ESTRITA: Bazar vem da COMBINAÇÃO (BAZAR no Drive + "bazar farm" no Site)
+                    finalProduct.bazar = !!item.bazar && !!finalProduct.isBazarFarm;
+                    finalProduct.isBazar = finalProduct.bazar;
+                    finalProduct.bazarFavorito = (!!item.bazarFavorito || (!!item.bazar && !!item.isFavorito)) && !!finalProduct.isBazarFarm;
 
                     finalProduct.verao = !!item.verao;
                     finalProduct.altoVerao = !!item.altoVerao;
@@ -314,6 +315,7 @@ function fastParseFromApi(productData, isFavorito = false) {
     let category = 'desconhecido';
     const categories = productData.categories || [];
     const breadcrumbText = categories.join(' ').toLowerCase();
+    const isBazarFarm = breadcrumbText.includes('bazar farm');
     const strictText = (urlLower + ' ' + nameLower + ' ' + breadcrumbText);
 
     if (strictText.includes('/vestido') || strictText.includes('vestido')) category = 'vestido';
@@ -409,7 +411,8 @@ function fastParseFromApi(productData, isFavorito = false) {
             precoAtual: precoAtual,
             tamanhos: [...new Set(validSizes)],
             categoria: category,
-            bazar: false, // Default to false, will be overridden by Drive metadata if available
+            bazar: isBazarFarm, // NOVO: Reflete o que o site diz
+            isBazarFarm: isBazarFarm, // NOVO
             imageUrl: items[0]?.images[0]?.imageUrl || null
         }
     };

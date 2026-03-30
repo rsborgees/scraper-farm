@@ -1,64 +1,67 @@
 const { scrapeSpecificIds } = require('./scrapers/farm/idScanner');
-const { scrapeSpecificIdsGeneric } = require('./scrapers/idScanner');
 const { initBrowser } = require('./browser_setup');
 
-async function verifyBazarPropagation() {
-    console.log('🚀 Starting Bazar Propagation Verification...');
+async function verify() {
     const { browser, context } = await initBrowser();
-
+    
     try {
-        // Test Case 1: Farm Scraper
-        console.log('\n--- Testing Farm Scraper ---');
-        const farmItem = {
-            id: '347072',
-            store: 'farm',
-            bazar: true, // Flagged as bazar in Drive
-            isFavorito: true
-        };
-
-        const farmResult = await scrapeSpecificIds(context, [farmItem], 1);
-        const farmProd = farmResult.products[0];
-
-        if (farmProd) {
-            console.log(`Product: ${farmProd.nome}`);
-            console.log(`Bazar Flag (bazar): ${farmProd.bazar}`);
-            console.log(`Bazar Flag (isBazar): ${farmProd.isBazar}`);
-            if (farmProd.bazar === true && farmProd.isBazar === true) {
-                console.log('✅ Farm Bazar Propagation: OK');
-            } else {
-                console.log('❌ Farm Bazar Propagation: FAILED');
+        // Test Cases - Using suffixes to ensure uniqueness for reporting
+        const testItems = [
+            {
+                id: '350634_07431_BAZAR_OK',
+                driveId: '350634_07431_BAZAR_OK',
+                ids: ['350634_07431'],
+                bazar: true,
+                name: 'Drive=Bazar, Site=Bazar => BAZAR'
+            },
+            {
+                id: '357038_09040_NON_BAZAR',
+                driveId: '357038_09040_NON_BAZAR',
+                ids: ['357038_09040'],
+                bazar: true,
+                name: 'Drive=Bazar, Site=Regular => REGULAR'
+            },
+            {
+                id: '350634_07431_DRIVE_REGULAR',
+                driveId: '350634_07431_DRIVE_REGULAR',
+                ids: ['350634_07431'],
+                bazar: false,
+                name: 'Drive=Regular, Site=Bazar => REGULAR'
             }
-        }
+        ];
 
-        // Test Case 2: Generic Scraper (e.g., Dress To)
-        console.log('\n--- Testing Generic Scraper (Dress To) ---');
-        const dressItem = {
-            id: '01332394',
-            store: 'dressto',
-            bazar: true,
-            isFavorito: true,
-            driveId: '01332394'
-        };
+        console.log('🚀 Starting Final Verification...\n');
 
-        const dressResult = await scrapeSpecificIdsGeneric(context, [dressItem], 'dressto', 1);
-        const dressProd = dressResult.products[0];
+        const { products } = await scrapeSpecificIds(context, testItems, 10);
 
-        if (dressProd) {
-            console.log(`Product: ${dressProd.nome}`);
-            console.log(`Bazar Flag (bazar): ${dressProd.bazar}`);
-            console.log(`Bazar Flag (isBazar): ${dressProd.isBazar}`);
-            if (dressProd.bazar === true && dressProd.isBazar === true) {
-                console.log('✅ Generic Bazar Propagation: OK');
-            } else {
-                console.log('❌ Generic Bazar Propagation: FAILED');
+        console.log('\n📊 FINAL RESULTS:');
+        testItems.forEach((testItem) => {
+            const result = products.find(p => p.id === testItem.id);
+            if (!result) {
+                console.log(`- Test Case: ${testItem.name}`);
+                console.log(`  ❌ NOT FOUND IN RESULTS`);
+                return;
             }
-        }
 
-    } catch (error) {
-        console.error('Error during verification:', error);
+            console.log(`- Test Case: ${testItem.name}`);
+            console.log(`  Input Drive Bazar: ${testItem.bazar}`);
+            console.log(`  Site isBazarFarm: ${!!result.isBazarFarm}`);
+            console.log(`  Final Result Bazar Flag: ${!!result.bazar}`);
+            
+            const expectedBazar = !!(testItem.bazar && result.isBazarFarm);
+            if (!!result.bazar === expectedBazar) {
+                console.log('  ✅ SUCCESS');
+            } else {
+                console.log('  ❌ FAILED');
+            }
+            console.log('');
+        });
+
+    } catch (e) {
+        console.error(e);
     } finally {
         await browser.close();
     }
 }
 
-verifyBazarPropagation();
+verify();
