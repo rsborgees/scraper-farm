@@ -99,16 +99,16 @@ function recordSentItems(products) {
 let DAILY_GOALS = {
     total: 165,
     stores: {
-        farm: 115,
-        dressto: 22,
-        kju: 14,   // máx 1 por run
-        live: 12,
-        zzmall: 3  // máx 3 por dia
+        farm: 116,
+        dressto: 25,
+        live: 13,
+        kju: 8,
+        zzmall: 3
     },
     farmCategories: {
-        vestido: 70, // ~60% of 115
-        macacão: 29, // ~25% of 115
-        outros: 16   // ~15% of 115
+        vestido: 75,
+        macacão: 17,
+        outros: 23
     }
 };
 

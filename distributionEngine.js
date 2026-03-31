@@ -151,64 +151,30 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         return true;
     });
 
-    // PRIORIDADES E QUOTAS
-    const mainStores = ['farm', 'dressto', 'kju', 'live'];
-    const secondaryStores = ['zzmall'];
-    const storeTargets = {
-        farm: 7,
-        dressto: 2, // Reduzido de 4 para 2 conforme solicitado pelo usuário
-        kju: 1,
-        live: 1
-    };
-
-    // 1ª PASSAGEM: Prioridade Total para 4-2-1
+    // 1ª PASSAGEM: Seleção Dinâmica baseada nas metas da rodada (runQuotas)
+    // Isso garante exatamente os 70/15/8/5/2% solicitados.
+    const allStores = ['farm', 'dressto', 'live', 'kju', 'zzmall'];
+    
     let iterations = 0;
-    while (finalSelection.length < TOTAL_LINKS && iterations < 20) {
-        iterations++;
-        let addedThisRound = false;
-        for (const store of mainStores) {
-            if (finalSelection.length >= TOTAL_LINKS) break;
-            const target = storeTargets[store] || 0;
-
-            // Especial para FARM: A cota de 7 já inclui 1 Bazar. 
-            // Na primeira passagem, pegamos apenas NORMÁIS.
-            // Então o limite de normais é target - bazares_já_selecionados.
-            const bazarCount = finalSelection.filter(p => (p.loja === store || (p.brand || '').toLowerCase() === store) && (p.bazar || p.isBazar)).length;
-            if (roundCounts[store] >= target) continue;
-            if (roundCounts[store] >= (RUN_CAPS[store] || 999)) continue; // Respeita cap absoluto por run
-            if (store === 'farm' && (roundCounts[store] - bazarCount) >= 6) continue;
-
-            const nextItem = regularPool.find(p => {
-                if (selectedIds.has(p.id)) return false;
-                const s = (p.loja || p.brand || '').toLowerCase();
-                return s === store || (store === 'dressto' && (s === 'dress' || s === 'dressto'));
-            });
-
-            if (nextItem) {
-                finalSelection.push(nextItem);
-                selectedIds.add(nextItem.id);
-                roundCounts[store]++;
-                addedThisRound = true;
-            }
-        }
-        if (!addedThisRound) break;
-    }
-
-    // 2ª PASSAGEM: Se ainda houver vaga, tenta secundários ou sobra das principais
-    iterations = 0;
     while (finalSelection.length < TOTAL_LINKS && iterations < 50) {
         iterations++;
         let addedThisRound = false;
-        const allStores = [...mainStores, ...secondaryStores];
+        
         for (const store of allStores) {
             if (finalSelection.length >= TOTAL_LINKS) break;
+            
+            // A meta da rodada para esta loja
+            const target = runQuotas[store] || 0;
+            if (roundCounts[store] >= target) continue;
+            
+            // Saldo diário restante (Supabase + histórico local)
             if (!hasDailySaldo(store)) continue;
-            if (roundCounts[store] >= (RUN_CAPS[store] || 999)) continue; // Cap absoluto por run
 
             const nextItem = regularPool.find(p => {
                 if (selectedIds.has(p.id)) return false;
                 const s = (p.loja || p.brand || '').toLowerCase();
-                return s === store || (store === 'dressto' && (s === 'dress' || s === 'dressto'));
+                const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
+                return storeKey === store;
             });
 
             if (nextItem) {

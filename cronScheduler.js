@@ -19,9 +19,15 @@ const DRIVE_SYNC_WEBHOOK_URL = "https://n8n-francalheira.vlusgm.easypanel.host/w
  */
 async function getSupabaseStats() {
     try {
+        const now = new Date();
+        const isoToday = now.toISOString().split('T')[0];
+        const brToday = now.toLocaleDateString('pt-BR'); // "DD/MM/YYYY"
+
+        // Busca multicamada: sent_at ISO OU hora_entrada formatada BR
         const { data, error } = await supabase
             .from('produtos')
-            .select('loja, payload');
+            .select('loja, bazar, favorito, novidade, hora_entrada, sent_at')
+            .or(`sent_at.gte.${isoToday},hora_entrada.ilike.%${brToday}%`);
 
         if (error) throw error;
 
@@ -37,8 +43,8 @@ async function getSupabaseStats() {
             if (stats.stores[storeKey] !== undefined) {
                 stats.stores[storeKey]++;
             }
-            // Verifica bazar no payload
-            if (item.payload && (item.payload.bazar || item.payload.isBazar)) {
+            // Verifica bazar
+            if (item.bazar || item.bazarFavorito) {
                 stats.bazar++;
             }
         });
@@ -54,16 +60,16 @@ async function getSupabaseStats() {
  * Calcula as quotas dinâmicas baseadas no estado atual do banco
  */
 function calculateDynamicQuotas(currentStats) {
-    const GLOBAL_TARGET = 158;
+    const GLOBAL_TARGET = 165;
     const IDEAL_TARGETS = {
-        farm: Math.round(GLOBAL_TARGET * 0.70),    // 111
-        dressto: Math.round(GLOBAL_TARGET * 0.15), // 24
+        farm: Math.round(GLOBAL_TARGET * 0.70),    // 116
+        dressto: Math.round(GLOBAL_TARGET * 0.15), // 25
         live: Math.round(GLOBAL_TARGET * 0.08),    // 13
         kju: Math.round(GLOBAL_TARGET * 0.05),     // 8
         zzmall: Math.round(GLOBAL_TARGET * 0.02)   // 3
     };
 
-    console.log('\n📊 [DynamicBalancing] Estado atual vs Meta (158):');
+    console.log(`\n📊 [DynamicBalancing] Estado atual vs Meta (165):`);
     const needed = {};
     let totalNeeded = 0;
 
@@ -128,23 +134,36 @@ async function saveToSupabase(products) {
     if (!products || products.length === 0) return;
 
     try {
-        const dataToInsert = products.map(p => ({
-            id: p.id,
+        const now = new Date();
+        const isoString = now.toISOString();
+        const brDate = now.toLocaleDateString('pt-BR');
+        const brTime = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const horaBR = `${brDate} ${brTime}`;
+
+        const dataToInsertRaw = products.map(p => ({
+            codigo: String(p.id),
             nome: p.nome,
             loja: p.loja || p.brand,
-            precooriginal: p.precoOriginal || p.preco,
-            precodesconto: p.precoAtual || p.preco,
+            precooriginal: Math.round(p.precoOriginal || p.preco || 0),
+            precodesconto: Math.round(p.precoAtual || p.preco || 0),
             linkproduto: p.url || p.link,
             imgloja: p.imageUrl,
             favorito: p.isFavorito || p.favorito || false,
             novidade: p.isNovidade || p.novidade || false,
             bazar: p.isBazar || p.bazar || false,
-            sent_at: new Date().toISOString()
+            sent_at: isoString,
+            hora_entrada: horaBR,
+            hora_envio: horaBR // Também preenchemos este campo por redundância
         }));
+
+        // Remove duplicatas de codigo no payload de envio (Supabase proíbe múltiplos matches no mesmo upsert)
+        const uniqueDataMap = new Map();
+        dataToInsertRaw.forEach(item => uniqueDataMap.set(item.codigo, item));
+        const dataToInsert = Array.from(uniqueDataMap.values());
 
         const { error } = await supabase
             .from('produtos')
-            .upsert(dataToInsert, { onConflict: 'id' });
+            .upsert(dataToInsert, { onConflict: 'codigo' });
 
         if (error) throw error;
         console.log(`✅ ${products.length} itens salvos/atualizados no Supabase.`);
@@ -199,12 +218,12 @@ async function runDailyDriveSyncJob() {
     console.log('='.repeat(60) + '\n');
 
     try {
-        // 0. Verificar limite no Supabase
+        // 0. Verificar limite no Supabase (Filtrado por HOJE)
         const currentStats = await getSupabaseStats();
-        console.log(`📊 [LimitCheck] Itens no banco: ${currentStats.total}/158`);
+        console.log(`📊 [LimitCheck] Itens enviados hoje: ${currentStats.total}/165`);
         
-        if (currentStats.total >= 158) {
-            console.log('⚠️ [LimitCheck] Limite de 158 peças atingido. Job de 05h cancelado.');
+        if (currentStats.total >= 165) {
+            console.log('⚠️ [LimitCheck] Meta diária de 165 peças já atingida. Job de 05h cancelado.');
             return;
         }
 
@@ -407,12 +426,12 @@ async function runScheduledScraping() {
     console.log('='.repeat(60) + '\n');
 
     try {
-        // 0. Verificar limite e calcular quotas inteligentes
+        // 0. Verificar limite e calcular quotas inteligentes (Filtrado por HOJE)
         const currentStats = await getSupabaseStats();
-        console.log(`📊 [LimitCheck] Itens no banco: ${currentStats.total}/158`);
+        console.log(`📊 [LimitCheck] Itens enviados hoje: ${currentStats.total}/165`);
         
-        if (currentStats.total >= 158) {
-            console.log('⚠️ [LimitCheck] Limite de 158 peças atingido. Scraping cancelado.');
+        if (currentStats.total >= 165) {
+            console.log('⚠️ [LimitCheck] Meta diária de 165 peças atingida. Scraping cancelado.');
             return { products: [], webhook: { success: false, reason: 'limit_reached' } };
         }
 
@@ -567,3 +586,9 @@ if (require.main === module) {
         });
     }
 }
+module.exports = {
+    getSupabaseStats,
+    saveToSupabase,
+    runDailyDriveSyncJob,
+    runScheduledScraping
+};

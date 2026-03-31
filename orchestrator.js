@@ -677,9 +677,7 @@ async function runAllScrapers(overrideQuotas = null) {
         console.log('📦 Pool de produtos coletados:', countsByStore);
 
         console.log('Aplicando motor de distribuição final...');
-        // Forçamos o target de 7 para Farm no distribution engine para garantir a regra 1+6
-        const activeQuotas = { ...quotas, farm: Math.min(7, remaining.stores.farm) };
-        const distributedProducts = distributeLinks(allProducts, activeQuotas, remaining);
+        const distributedProducts = distributeLinks(allProducts, quotas, remaining);
 
         // Debug Log for Bazar Flag
         console.log('\n📊 [Orchestrator] Concluindo Distribuição. Verificando Flag Bazar:');
