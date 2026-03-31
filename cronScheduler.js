@@ -11,7 +11,6 @@ function getOrchestrator() {
     return orchestrator;
 }
 const { checkFarmTimer } = require('./scrapers/farm/timer_check');
-const { supabase } = require('./supabaseClient');
 
 
 const { getPromoSummary } = require('./scrapers/farm/promoScanner');
@@ -559,7 +558,6 @@ async function runManualTest() {
 }
 
 // Exporta funções
-// 1. Define exports first
 module.exports = {
     setupDailySchedule,
     runScheduledScraping,
