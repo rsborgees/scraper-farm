@@ -2,18 +2,18 @@
  * Engine de Distribuição de Links
  */
 
-// Cotas Diárias (Base ~11 links por execução para atingir ~165/dia em 15 horários)
-const TOTAL_LINKS = 11;
+// Cotas Diárias (Base ~11 links por execução para atingir ~160/dia em 15 horários)
+const BASE_TOTAL_LINKS = 11;
 const QUOTAS = {
     FARM: {
-        percent: 0.53,
+        percent: 0.70,
         count: 4,
-        dailyGoal: 56
+        dailyGoal: 112
     },
     DRESS: {
-        percent: 0.21,
+        percent: 0.15,
         count: 2.0,
-        dailyGoal: 22
+        dailyGoal: 24
     },
     KJU: {
         percent: 0.09,
@@ -91,6 +91,11 @@ function filterEligibleProducts(products) {
 function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
     const finalSelection = [];
     const selectedIds = new Set();
+
+    // Determina o limite da rodada: se o cron balancer enviar cotas exatas, respeitamos a soma delas.
+    // Isso impede de gerar "filler" e estourar a meta global do dia.
+    let runTotalTarget = Object.values(runQuotas).reduce((a, b) => a + b, 0);
+    const TOTAL_LINKS = runTotalTarget > 0 ? Math.min(BASE_TOTAL_LINKS, runTotalTarget) : BASE_TOTAL_LINKS;
 
     // Contadores desta rodada por loja
     const roundCounts = {
@@ -197,7 +202,7 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
                 // REGRA: Blusa nunca pode ser enviada em maior quantidade que macacão ou vestido
                 const cat = getCatItem(p);
                 if (cat === 'blusa') {
-                    if (categoryCounts['blusa'] >= categoryCounts['vestido'] || categoryCounts['blusa'] >= categoryCounts['macacão']) {
+                    if (categoryCounts['blusa'] > (categoryCounts['vestido'] + categoryCounts['macacão'])) {
                         return false; 
                     }
                 }
@@ -235,7 +240,7 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
 
             const cat = getCatItem(p);
             if (cat === 'blusa') {
-                if (categoryCounts['blusa'] >= categoryCounts['vestido'] || categoryCounts['blusa'] >= categoryCounts['macacão']) {
+                if (categoryCounts['blusa'] > (categoryCounts['vestido'] + categoryCounts['macacão'])) {
                     continue; 
                 }
             }

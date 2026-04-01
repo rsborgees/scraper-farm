@@ -97,10 +97,10 @@ function recordSentItems(products) {
 
 // Metas Diárias
 let DAILY_GOALS = {
-    total: 165,
+    total: 160,
     stores: {
-        farm: 116,
-        dressto: 25,
+        farm: 112,
+        dressto: 24,
         live: 13,
         kju: 8,
         zzmall: 3

@@ -62,7 +62,7 @@ async function getSupabaseStats() {
  * Calcula as quotas dinâmicas baseadas no estado atual do banco
  */
 function calculateDynamicQuotas(currentStats) {
-    const GLOBAL_TARGET = 165;
+    const GLOBAL_TARGET = 160;
     const IDEAL_TARGETS = {
         farm: Math.round(GLOBAL_TARGET * 0.70),    // 116
         dressto: Math.round(GLOBAL_TARGET * 0.15), // 25
@@ -193,10 +193,10 @@ async function runDailyDriveSyncJob() {
     try {
         // 0. Verificar limite no Supabase (Filtrado por HOJE)
         const currentStats = await getSupabaseStats();
-        console.log(`📊 [LimitCheck] Itens enviados hoje: ${currentStats.total}/165`);
+        console.log(`📊 [LimitCheck] Itens enviados hoje: ${currentStats.total}/160`);
         
-        if (currentStats.total >= 165) {
-            console.log('⚠️ [LimitCheck] Meta diária de 165 peças já atingida. Job de 05h cancelado.');
+        if (currentStats.total >= 160) {
+            console.log('⚠️ [LimitCheck] Meta diária de 160 peças já atingida. Job de 05h cancelado.');
             return;
         }
 
@@ -400,10 +400,10 @@ async function runScheduledScraping() {
     try {
         // 0. Verificar limite e calcular quotas inteligentes (Filtrado por HOJE)
         const currentStats = await getSupabaseStats();
-        console.log(`📊 [LimitCheck] Itens enviados hoje: ${currentStats.total}/165`);
+        console.log(`📊 [LimitCheck] Itens enviados hoje: ${currentStats.total}/160`);
         
-        if (currentStats.total >= 165) {
-            console.log('⚠️ [LimitCheck] Meta diária de 165 peças atingida. Scraping cancelado.');
+        if (currentStats.total >= 160) {
+            console.log('⚠️ [LimitCheck] Meta diária de 160 peças atingida. Scraping cancelado.');
             return { products: [], webhook: { success: false, reason: 'limit_reached' } };
         }
 
