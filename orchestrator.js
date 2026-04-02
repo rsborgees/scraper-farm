@@ -339,8 +339,8 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                         .sort((a, b) => getPriorityScore(b, history) - getPriorityScore(a, history))
                         .slice(0, 50);
 
-                    // Aumentamos a chamada do scraper (+2 de gordura) garantindo margem para perda no filtro
-                    const dressQuota = Math.min(10, (quotas.dressto || 2) + 2);
+                    // Aumentamos a chamada do scraper para cobrir não apenas a cota, mas permitir que atue fortemente no filler
+                    const dressQuota = 15; // Fixo para permitir margem larga e recuperar % rapidamente
                     const { products: scrapedItems, stats } = await scrapeSpecificIdsGeneric(context, limitedItems, 'dressto', dressQuota, { maxAgeHours: 24 }); // Permite fallback de 24h
 
                     scrapedItems.forEach(p => {
