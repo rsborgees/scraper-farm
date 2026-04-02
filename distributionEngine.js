@@ -111,12 +111,14 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         'vestido': 0,
         'macacão': 0,
         'blusa': 0,
+        'conjunto': 0,
         'outros': 0
     };
 
     function getCatItem(p) {
         if (!p) return 'outros';
         const str = (p.categoria || p.category || p.nome || '').toLowerCase();
+        if (p.isSet || str.includes('conjunto') || str.includes('/conjunto')) return 'conjunto';
         if (str.includes('vestido')) return 'vestido';
         if (str.includes('macacão') || str.includes('macacao')) return 'macacão';
         if (str.includes('blusa') || str.includes('camisa') || str.includes('t-shirt') || str.includes('top') || str.includes('cropped')) return 'blusa';
@@ -174,6 +176,17 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         return true;
     });
 
+    // Função de prioridade (Vestidos e Macacões = 1, Outros = 2, Blusa/Conjunto = 3)
+    function getPriority(p) {
+        const cat = getCatItem(p);
+        if (cat === 'vestido' || cat === 'macacão') return 1;
+        if (cat === 'conjunto' || cat === 'blusa') return 3;
+        return 2;
+    }
+
+    // Ordena o pool para que os prioritários sejam escolhidos antes
+    regularPool.sort((a, b) => getPriority(a) - getPriority(b));
+
     // 1ª PASSAGEM: Seleção Dinâmica baseada nas metas da rodada (runQuotas)
     // Isso garante exatamente os 70/15/8/5/2% solicitados.
     const allStores = ['farm', 'dressto', 'live', 'kju', 'zzmall'];
@@ -199,11 +212,23 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
                 const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
                 if (storeKey !== store) return false;
 
-                // REGRA: Blusa nunca pode ser enviada em maior quantidade que macacão ou vestido
+                // REGRA: Blusa e Conjunto nunca podem ser enviados em maior quantidade que macacão ou vestido,
+                // A MENOS que não haja mais opções melhores na pool
                 const cat = getCatItem(p);
-                if (cat === 'blusa') {
-                    if (categoryCounts['blusa'] > (categoryCounts['vestido'] + categoryCounts['macacão'])) {
-                        return false; 
+                if (cat === 'blusa' || cat === 'conjunto') {
+                    const hasBetter = regularPool.some(rp => {
+                        if (selectedIds.has(rp.id)) return false;
+                        const s2 = (rp.loja || rp.brand || '').toLowerCase();
+                        const storeKey2 = (s2 === 'dress' || s2 === 'dressto') ? 'dressto' : s2;
+                        if (storeKey2 !== store) return false;
+                        const rpCat = getCatItem(rp);
+                        return rpCat === 'vestido' || rpCat === 'macacão';
+                    });
+                    
+                    if (hasBetter) {
+                        if (categoryCounts[cat] > (categoryCounts['vestido'] + categoryCounts['macacão'])) {
+                            return false; 
+                        }
                     }
                 }
                 
@@ -239,9 +264,21 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
             if (storeKey === 'farm' && (p.favorito || p.isFavorito || p.novidade || p.isNovidade)) continue;
 
             const cat = getCatItem(p);
-            if (cat === 'blusa') {
-                if (categoryCounts['blusa'] > (categoryCounts['vestido'] + categoryCounts['macacão'])) {
-                    continue; 
+            if (cat === 'blusa' || cat === 'conjunto') {
+                const hasBetter = allProducts.some(rp => {
+                    if (selectedIds.has(rp.id)) return false;
+                    const s2 = (rp.loja || rp.brand || '').toLowerCase();
+                    const storeKey2 = (s2 === 'dress' || s2 === 'dressto') ? 'dressto' : s2;
+                    if (!hasDailySaldo(storeKey2)) return false;
+                    if (roundCounts[storeKey2] >= (RUN_CAPS[storeKey2] || 999)) return false;
+                    const rpCat = getCatItem(rp);
+                    return rpCat === 'vestido' || rpCat === 'macacão';
+                });
+                
+                if (hasBetter) {
+                    if (categoryCounts[cat] > (categoryCounts['vestido'] + categoryCounts['macacão'])) {
+                        continue; 
+                    }
                 }
             }
 
