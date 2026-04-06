@@ -171,7 +171,13 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         if (p.bazar || p.isBazar) return false;
 
         const isFavOrNov = p.favorito || p.isFavorito || p.novidade || p.isNovidade || p.isSiteNovidade;
-        if (isFavOrNov) return false; // Strictly exclude from ALL STORES hourly
+        if (isFavOrNov) {
+            // Regra Relaxada: Lojas menores (zzmall, kju, live, dressto) PODEM enviar favoritos do Drive nas horas.
+            // Apenas a FARM é estritamente proibida de enviar favoritos horários para não poluir o grupo.
+            const s = (p.loja || p.brand || '').toLowerCase();
+            const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
+            if (storeKey === 'farm') return false;
+        }
 
         return true;
     });
@@ -189,7 +195,7 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
 
     // 1ª PASSAGEM: Seleção Dinâmica baseada nas metas da rodada (runQuotas)
     // Isso garante exatamente os 70/15/8/5/2% solicitados.
-    const allStores = ['farm', 'dressto', 'live', 'kju', 'zzmall'];
+    const allStores = ['zzmall', 'kju', 'live', 'dressto', 'farm'];
     
     let iterations = 0;
     while (finalSelection.length < TOTAL_LINKS && iterations < 50) {
@@ -286,6 +292,21 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
             selectedIds.add(p.id);
             if (roundCounts[storeKey] !== undefined) roundCounts[storeKey]++;
             categoryCounts[cat]++;
+        }
+    }
+
+    // 4. FALLBACK EXTREMO (A pedido do usuário): "Não pode perder envio"
+    // Caso a fila ainda tenha vagas (gap > 0) e as restrições (saldo do dia cheio) 
+    // tenham bloqueado a seleção, pegamos QUALQUER coisa do pool para não retornar 0.
+    if (finalSelection.length < TOTAL_LINKS && allProducts.length > 0) {
+        console.log(`🚨 [Distribution] ALERTA: Cotas estouradas, não preencheu e vai perder envio. Ignorando regras e forçando preenchimento extremo!`);
+        for (const p of allProducts) {
+            if (finalSelection.length >= TOTAL_LINKS) break;
+            if (selectedIds.has(p.id)) continue;
+
+            finalSelection.push(p);
+            selectedIds.add(p.id);
+            console.log(`   🆘 Item de resgate de uso: ${p.nome} (${p.loja})`);
         }
     }
 

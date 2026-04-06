@@ -1,0 +1,269 @@
+{
+  "stats": {
+    "total": 266,
+    "lojas": {
+      "kju": 16,
+      "dressto": 30,
+      "farm": 217,
+      "zzmall": 3
+    },
+    "bazar": 18,
+    "novidades": 68,
+    "emptySizes": 17
+  },
+  "anomalies": {
+    "kju": [
+      {
+        "row": 2,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Regata Matte Verde FARM ETC - Inverno 2026"
+      },
+      {
+        "row": 14,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "78331175"
+      },
+      {
+        "row": 26,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "78328944"
+      },
+      {
+        "row": 40,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "78330658"
+      },
+      {
+        "row": 55,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Bolsa Praiana Floral Carolina Copacabana Brasil Silk Off White FARM ETC - Inverno 2026"
+      },
+      {
+        "row": 56,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Garrafa Que Sede 750ml Buena Gente Preto FARM ETC - Inverno 2026"
+      },
+      {
+        "row": 72,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Cooler Farofa Urbano Semana de Arte FARM ETC - Inverno 2026"
+      },
+      {
+        "row": 81,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Garrafa Glub Glub 1L Patch Rio Azul FARM ETC - Alto Verão 2026"
+      },
+      {
+        "row": 154,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Garrafa Etc 650ml Semana De Arte Off White FARM ETC - Inverno 2026"
+      },
+      {
+        "row": 160,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "78331227"
+      },
+      {
+        "row": 172,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "683354"
+      },
+      {
+        "row": 175,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Chaveiro Banana Amarelo FARM ETC - Inverno 2026"
+      },
+      {
+        "row": 184,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Chaveiro Costela De Adão Verde FARM ETC - Inverno 2026"
+      },
+      {
+        "row": 206,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "Mini Mochila Borogodó Floral Tropical FARM ETC - Inverno 2026"
+      },
+      {
+        "row": 216,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "78335054"
+      },
+      {
+        "row": 225,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "78332419"
+      }
+    ],
+    "dressto": [],
+    "farm": [
+      {
+        "row": 41,
+        "problems": [
+          "Código com formato estranho para Farm: 359118_07635"
+        ],
+        "item": "Vestido Meia Taça Pregas"
+      },
+      {
+        "row": 63,
+        "problems": [
+          "Código com formato estranho para Farm: 350673_07431"
+        ],
+        "item": "Vestido Detalhe Amarração"
+      },
+      {
+        "row": 64,
+        "problems": [
+          "Código com formato estranho para Farm: 350637_05076"
+        ],
+        "item": "Vestido Curto Franzido"
+      },
+      {
+        "row": 65,
+        "problems": [
+          "Código com formato estranho para Farm: 345605_09050"
+        ],
+        "item": "Vestido Franzido Afrodite"
+      },
+      {
+        "row": 78,
+        "problems": [
+          "Código com formato estranho para Farm: 357064_09040 357065_09040"
+        ],
+        "item": "Túnica Richilieu Vida Marinha"
+      },
+      {
+        "row": 88,
+        "problems": [
+          "Código com formato estranho para Farm: 353224_8421"
+        ],
+        "item": "Vestido Balonê Longo"
+      },
+      {
+        "row": 92,
+        "problems": [
+          "Código com formato estranho para Farm: 355670_0013"
+        ],
+        "item": "Vestido Franzido Laise De Banana"
+      },
+      {
+        "row": 94,
+        "problems": [
+          "Código com formato estranho para Farm: 352406_0013 352412_0013"
+        ],
+        "item": "Saia Cropped"
+      },
+      {
+        "row": 96,
+        "problems": [
+          "Código com formato estranho para Farm: 356246_07635"
+        ],
+        "item": "Vestido Babados Barra"
+      },
+      {
+        "row": 125,
+        "problems": [
+          "Código com formato estranho para Farm: 354617_07448"
+        ],
+        "item": "Vestido Cropped Babados"
+      },
+      {
+        "row": 128,
+        "problems": [
+          "Código com formato estranho para Farm: 350503_0013"
+        ],
+        "item": "Camisa Laise Concha"
+      },
+      {
+        "row": 137,
+        "problems": [
+          "Código com formato estranho para Farm: 350504_0013"
+        ],
+        "item": "Saia Transpasse Laise Concha"
+      },
+      {
+        "row": 190,
+        "problems": [
+          "Código com formato estranho para Farm: 359118_07635"
+        ],
+        "item": "Vestido Meia Taça Pregas"
+      },
+      {
+        "row": 201,
+        "problems": [
+          "Código com formato estranho para Farm: 359114_8315"
+        ],
+        "item": "Vestido Cropped Pregas"
+      },
+      {
+        "row": 202,
+        "problems": [
+          "Código com formato estranho para Farm: 352414_07431"
+        ],
+        "item": "Vestido Rib Cavado"
+      },
+      {
+        "row": 217,
+        "problems": [
+          "Código com formato estranho para Farm: 352178_8421"
+        ],
+        "item": "Vestido Patch Renda"
+      },
+      {
+        "row": 236,
+        "problems": [
+          "Código com formato estranho para Farm: 356244_07629"
+        ],
+        "item": "Vestido Lastex Alcinhas"
+      },
+      {
+        "row": 237,
+        "problems": [
+          "Código com formato estranho para Farm: 351242_07431"
+        ],
+        "item": "Vestido Longo Guipure Odara"
+      }
+    ],
+    "zzmall": [
+      {
+        "row": 11,
+        "problems": [
+          "Tamanhos vazios: '{}'"
+        ],
+        "item": "CHINELO SCHUTZ CLASSIC VERMELHO"
+      }
+    ],
+    "other": []
+  }
+}

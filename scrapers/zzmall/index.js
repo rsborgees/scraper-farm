@@ -32,11 +32,11 @@ async function scrapeZZMall(quota = 6, parentBrowser = null) {
 
     try {
         const brandPromoUrls = [
-            'https://www.zzmall.com.br/arezzo/promocao',
-            'https://www.zzmall.com.br/schutz/promocao',
-            'https://www.zzmall.com.br/anacapri/promocao',
-            'https://www.zzmall.com.br/vizzano/promocao',
-            'https://www.zzmall.com.br/bolsas/promocao'
+            'https://www.zzmall.com.br/c/promocao?q=:relevance:brand:arezzo',
+            'https://www.zzmall.com.br/c/promocao?q=:relevance:brand:schutz',
+            'https://www.zzmall.com.br/c/promocao?q=:relevance:brand:anacapri',
+            'https://www.zzmall.com.br/c/promocao?q=:relevance:brand:vizzano',
+            'https://www.zzmall.com.br/c/promocao?q=:relevance:category:bolsas'
         ];
 
         for (const promoUrl of brandPromoUrls) {
@@ -168,7 +168,6 @@ async function scrapeZZMall(quota = 6, parentBrowser = null) {
                         if (product.desconto < 0) product.desconto = 0;
                         product.imagePath = imagePath;
 
-                        markAsSent([product.id]);
                         products.push(product);
                         console.log(`      ✅ Coletado: ${product.nome} | R$${product.precoAtual}`);
                     }

@@ -168,7 +168,7 @@ async function scrapeSpecificIdsGeneric(contextOrBrowser, driveItems, storeName,
                                         } else {
                                             const productLink = await page.$('a[class*="vtex-product-summary-2-x-clearLink"], a[href*="/p"]');
                                             if (productLink) {
-                                                await productLink.click();
+                                                await productLink.evaluate(el => el.click());
                                                 await page.waitForTimeout(5000);
                                                 if (page.url().includes('/p')) navigationSuccess = true;
                                             }

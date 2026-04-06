@@ -1,0 +1,902 @@
+{
+  "totalVerificados": 120,
+  "discrepanciasEncontradas": 112,
+  "discrepanciasDetalhes": [
+    {
+      "row": 148,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Araraquara",
+      "planilha": "G,GG",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-araraquara-araraquara_rosa-deserto-357760-55679/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 149,
+      "loja": "farm",
+      "nome": "Vestido Longo Manga Estampado Floral Siena",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-manga-estampado-floral-siena-floral-siena_vermelho-moscato-355044-55458/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 152,
+      "loja": "farm",
+      "nome": "Regata Estampada Jardim Louise + Calça Pantalona Estampada Jardim Louise",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/regata-estampada-jardim-louise-jardim-louise_localizado-mini_bege-cupu-356079-55739/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 151,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Camafeu",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-camafeu-camafeu_vermelho-moscato-370100-55459/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 150,
+      "loja": "farm",
+      "nome": "Vestido Estampado Jardim Louise",
+      "planilha": "GG,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-estampado-jardim-louise-jardim-louise_bege-cupuacu-357918-55461/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 155,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Floral Lola",
+      "planilha": "M",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-floral-lola-lola-buque_off-white-370438-55385/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 153,
+      "loja": "farm",
+      "nome": "Vestido Cropped Estampado Água De Flor",
+      "planilha": "G",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-cropped-estampado-agua-de-flor-agua-de-flor_preto-358235-55389/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 157,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Tucanário",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-tucanario-tucanario_preto-357943-55467/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 156,
+      "loja": "farm",
+      "nome": "Vestido Longo Sem Alça Estampado Floral Siena",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-sem-alca-estampado-floral-siena-floral_siena_vermelho-moscato-370050-55458/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 162,
+      "loja": "farm",
+      "nome": "Vestido Estampado Lenço Arabesque",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-estampado-lenco-arabesque-lenco-arabesque_azul-lazuli-357708-55457/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 159,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Lenço Arabesque",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-lenco-arabesque-lenco-arabesque_azul-lazuli-356043-55457/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 158,
+      "loja": "farm",
+      "nome": "Macaquinho Curto Estampado Festa De Concha",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/macaquinho-curto-estampado-festa-de-concha-festa-de-concha_rosa-liz-370104-55431/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 161,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Natureza Romântica",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-natureza-romantica-natureza-romantica_localizado-medio_beg-356081-56207/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 164,
+      "loja": "farm",
+      "nome": "Vestido  Richelieu Camafeu",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-richelieu-camafeu-branco-tela-355681-10066/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 167,
+      "loja": "farm",
+      "nome": "Blusa Richelieu Tulipas + Calça Aladim Richelieu Tulipas",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/blusa-richelieu-tulipas-roxo-sangria-355693-09008/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 166,
+      "loja": "farm",
+      "nome": "Vestido Artesanal Patch Romântico",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-artesanal-patch-romantico-off-white-355707-07448/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 163,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Araraquara",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-araraquara-araraquara_malha_rosa-deserto-356774-57172/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 165,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Jardim Louise",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-jardim-louise-jardim-louise_azul-lazuli-357915-55460/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 170,
+      "loja": "farm",
+      "nome": "Macacão Estampado Natureza Romântica",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/macacao-estampado-natureza-romantica-natureza-romantica_localizado-maxi_bege-356080-56208/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 169,
+      "loja": "farm",
+      "nome": "Vestido Alcinhas Estampado Boemia",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-alcinhas-estampado-boemia-boemia_azul-nordico-356348-56465/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 168,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Água De Flor",
+      "planilha": "G,GG,M",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-agua-de-flor-agua-de-flor_espelhado_preto-370109-56220/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 171,
+      "loja": "farm",
+      "nome": "Macaquinho Estampado Paraíso Das Aves",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/macaquinho-estampado-paraiso-das-aves-paraiso-das-aves_verde-senecio-370108-55465/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 174,
+      "loja": "farm",
+      "nome": "Vestido Cutwork Araraquara",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-cutwork-araraquara-preto-355656-0013/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 173,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Samba No Pé",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-samba-no-pe-samba-no-pe_multicolorido-356327-55406/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 176,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Jardim Louise",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-jardim-louise-jardim-louise_malha_bege-cupuacu-357982-55620/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 177,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Jardim Louise",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-jardim-louise-jardim-louise_bege-cupuacu-357919-55461/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 182,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Natureza Romântica",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-natureza-romantica-natureza-romantica_vermelho-moscato-357574-55462/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 181,
+      "loja": "farm",
+      "nome": "Blusa Jeans Original",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/blusa-jeans-original-jeans-escuro-357804-0109/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 178,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Floral Siena",
+      "planilha": "G,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-floral-siena-floral_siena_-vermelho-moscato-370048-55458/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 179,
+      "loja": "farm",
+      "nome": "Vestido T-Shirt Big Estampado Araraquara",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-t-shirt-big-estampado-araraquara-araraquara_local-malha_off-white-356971-55573/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 180,
+      "loja": "farm",
+      "nome": "Regata Estampada Lenço Arabesque + Calça Estampada Lenço Arabesque",
+      "planilha": "G,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/regata-estampada-lenco-arabesque-lenco-arabesque_azul-lazuli-356053-55457/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 183,
+      "loja": "farm",
+      "nome": "Bata Amarração Estampada Natureza Romântica + Short Saia Estampado Natureza Romântica",
+      "planilha": "G,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/bata-amarracao-estampada-natureza-romantica-natureza-romantica_bege-cupuacu-356661-56486/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 186,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Aquaflora",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-aquaflora-aquaflora_off-white-358851-55388/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 187,
+      "loja": "farm",
+      "nome": "Vestido Alcinha Estampado Céu De Flor",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-alcinha-estampado-ceu-de-flor-ceu-de-flor_localizado-mini_preto-356095-56089/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 185,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Céu De Flor",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-ceu-de-flor-ceu-de-flor_preto-358793-51433/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 189,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Conchas",
+      "planilha": "G",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-conchas-conchas_corrido-malha_preto-357261-55616/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 191,
+      "loja": "farm",
+      "nome": "Vestido Ombro Só Estampado Floral Samanta",
+      "planilha": "G,GG,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-ombro-so-estampado-floral-samanta-floral-samanta_malha_azul-carioca-356956-55585/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 192,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Lola Buquê",
+      "planilha": "G",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-lola-buque-lola-buque_off-white-370151-55385/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 188,
+      "loja": "farm",
+      "nome": "Vestido Estampado Aquaflora",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-estampado-aquaflora-aquaflora_off-white-357856-55388/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 190,
+      "loja": "farm",
+      "nome": "Vestido Meia Taça Pregas",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-meia-taca-pregas-marrom-catuai-359118-07635/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 197,
+      "loja": "dressto",
+      "nome": "Vestido Longo Estampa Margaridas Azul",
+      "planilha": "G,GG",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-longo-estampa-margaridas-azul-01342734-471/p"
+    },
+    {
+      "row": 194,
+      "loja": "farm",
+      "nome": "Vestido Enviesado Estampado Floral Vera",
+      "planilha": "G,GG,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-enviesado-estampado-floral-vera-floral-vera_bege-seda-357952-55487/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 193,
+      "loja": "farm",
+      "nome": "Vestido Degagê Estampado Asa De Borboleta Preto",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-degage-estampado-asa-de-borboleta-preto-asa-de-borboleta_eng-vestido_preto-359018-56477/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 196,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Jardim Romance",
+      "planilha": "M,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-jardim-romance-jardim-romance_barrado-malha_preto-352440-54165/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 195,
+      "loja": "farm",
+      "nome": "Vestido Cropped Marias Bordado Peixe",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-cropped-marias-bordado-peixe-branco-tela-363187-10066/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 200,
+      "loja": "farm",
+      "nome": "Macacão Estampado Tucanário",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/macacao-estampado-tucanario-tucanario_preto-357945-55467/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 202,
+      "loja": "farm",
+      "nome": "Vestido Rib Cavado",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-rib-cavado-vermelho-melancia-352414-07431/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 199,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Canto Dos Pássaros",
+      "planilha": "G,GG",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-canto-dos-passaros-canto-dos-passaros_rosa-luna-351049-53923/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 201,
+      "loja": "farm",
+      "nome": "Vestido Cropped Pregas",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-cropped-pregas-rosa-bethania-359114-8315/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 198,
+      "loja": "farm",
+      "nome": "Vestido Frente Única Estampado Lírio Tropical",
+      "planilha": "G",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-frente-unica-estampado-lirio-tropical-lirio-tropical_verde-prisma-354620-53976/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 205,
+      "loja": "farm",
+      "nome": "Vestido Tricot Borboleta",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-tricot-borboleta-off-white-350962-07448/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 204,
+      "loja": "farm",
+      "nome": "Vestido Frente Única Listra Bananeira",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-frente-unica-listra-bananeira-listra-bananeira_multicolorido-357779-55440/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 207,
+      "loja": "farm",
+      "nome": "Vestido T-Shirt Big Listra Tropical",
+      "planilha": "G,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-t-shirt-big-listra-tropical-listra-tropical_localizado-malha_bege-s-357262-55581/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 203,
+      "loja": "farm",
+      "nome": "Top Estampado Florie + Saia Estampada Florie",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/top-estampado-florie-florie_verde-laguna-362931-55377/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 212,
+      "loja": "farm",
+      "nome": "Vestido Curto Manga Estampado Ourinho Tropical",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-manga-estampado-ourinho-tropical-ourinho-tropical_bege-seda-357851-55469/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 210,
+      "loja": "farm",
+      "nome": "Vestido Tule Alcinha",
+      "planilha": "G,GG",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-tule-alcinha-preto-358080-0013/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 211,
+      "loja": "farm",
+      "nome": "Vestido Decote Flores",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-decote-flores-branco-tela-350631-10066/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 209,
+      "loja": "farm",
+      "nome": "Vestido Cutwork Souvenir Litoral",
+      "planilha": "P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-cutwork-souvenir-litoral-souvenir-litoral_multicolorido-351210-54019/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 208,
+      "loja": "farm",
+      "nome": "Vestido T-Shirt Básico Estampado Respiro De Rio",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-t-shirt-basico-estampado-respiro-de-rio-respiro-de-rio_localizado-malha_bege-se-357996-55637/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 215,
+      "loja": "farm",
+      "nome": "Vestido Cropped Estampado Gabrielle",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-cropped-estampado-gabrielle-gabrielle_amarelo-pinoli-352047-53958/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 214,
+      "loja": "farm",
+      "nome": "Vestido Estampado Tuca Legal",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-estampado-tuca-legal-tuca-legal_preto-356298-55502/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 217,
+      "loja": "farm",
+      "nome": "Vestido Patch Renda",
+      "planilha": "G",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-patch-renda-rosa-tulipa-352178-8421/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 213,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Rio Antigo",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-rio-antigo-rio-antigo_azul-sierra-357692-55411/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 220,
+      "loja": "dressto",
+      "nome": "Vestido Cropped Tricoline Estampa Lírios",
+      "planilha": "GG",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-cropped-tricoline-estampa-lirios-01342784-2364/p"
+    },
+    {
+      "row": 222,
+      "loja": "dressto",
+      "nome": "Vestido Cropped Tricoline Estampa Lírios",
+      "planilha": "GG",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-cropped-tricoline-estampa-lirios-01342784-2364/p"
+    },
+    {
+      "row": 218,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Florie",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-florie-florie_verde-laguna-356293-55377/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 221,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Sintra",
+      "planilha": "P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-sintra-sintra_malha_preto-351344-54128/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 219,
+      "loja": "farm",
+      "nome": "Vestido Pontas Listra Laranja",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-pontas-listra-laranja-laranja-357784-2019/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 227,
+      "loja": "farm",
+      "nome": "Camisa Estampada Samba No Pé",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/camisa-estampada-samba-no-pe-samba-no-pe_multicolorido-356664-55406/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 224,
+      "loja": "farm",
+      "nome": "Vestido Curto Transpasse Bordado Coqueiro",
+      "planilha": "G,GG,M",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-transpasse-bordado-coqueiro-preto-355735-0005/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 226,
+      "loja": "farm",
+      "nome": "Vestido Alcinha Estampado Coquetel",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-alcinha-estampado-coquetel-coquetel_off-white-350719-54033/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 223,
+      "loja": "farm",
+      "nome": "Macaquinho Estampado Tucanário",
+      "planilha": "G,GG,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/macaquinho-estampado-tucanario-tucanario_maxi_preto-356020-56056/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 230,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Tucano Real",
+      "planilha": "P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-tucano-real-tucano-real_preto-356960-55466/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 229,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Mirante",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-mirante-mirante_multicolorido-356667-55445/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 228,
+      "loja": "farm",
+      "nome": "Blusa Estampada Respiro De Rio",
+      "planilha": "G,GG",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/blusa-estampada-respiro-de-rio-respiro-de-rio_bege-seda-370441-55413/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 232,
+      "loja": "farm",
+      "nome": "Vestido Tela Cutwork Palermo",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-tela-cutwork-palermo-branco-351766-0002/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 231,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Montanha De Tucano",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-montanha-de-tucano-montanha-de-tucano_malha_multicolorido-357079-55575/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 235,
+      "loja": "dressto",
+      "nome": "Vestido Lurex Estampa Listra Céu",
+      "planilha": "G,GG",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-lurex-estampa-listra-ceu-01342750-2406/p"
+    },
+    {
+      "row": 237,
+      "loja": "farm",
+      "nome": "Vestido Longo Guipure Odara",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-guipure-odara-vermelho-melancia-351242-07431/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 234,
+      "loja": "farm",
+      "nome": "Vestido Midi Cobogó Palha",
+      "planilha": "G,GG,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-cobogo-palha-usiacuri-artesanal_farm-mara_amarelo-tun-351380-54651/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 236,
+      "loja": "farm",
+      "nome": "Vestido Lastex Alcinhas",
+      "planilha": "G,GG,M",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-lastex-alcinhas-amarelo-julia-356244-07629/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 233,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Bohoflor",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-bohoflor-bohoflor_localizado-mini_bege-seda-356024-56121/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 239,
+      "loja": "dressto",
+      "nome": "Vestido Tule Estampa Beta",
+      "planilha": "G,GG,M",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-tule-estampa-beta-01342756-2369/p"
+    },
+    {
+      "row": 240,
+      "loja": "farm",
+      "nome": "Blusa Estampada Vida Marinha",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/blusa-estampada-vida-marinha-vida-marinha_azul-igarape-356368-55432/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 241,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Colagem Carioca",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-colagem-carioca-colagem-carioca_off-white-357755-55436/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 238,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Ourinho Tropical",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-ourinho-tropical-ourinho-tropical_localizado_preto-359767-56542/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 242,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Nikita",
+      "planilha": "GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-nikita-nikita_preto-356705-55496/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 247,
+      "loja": "dressto",
+      "nome": "Vestido Cropped Linho Est Onda Floral",
+      "planilha": "G,M,P,PP,XPP",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-cropped-linho-est-onda-floral-01342953-0078/p"
+    },
+    {
+      "row": 243,
+      "loja": "farm",
+      "nome": "Body Estampado Praia Carioca + Bermuda Estampada Colagem Carioca",
+      "planilha": "G,GG,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/body-estampado-praia-carioca-off-white-362965-07448/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 245,
+      "loja": "farm",
+      "nome": "Short Estampado Noite De Pássaro",
+      "planilha": "GG,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/short-estampado-noite-de-passaro-noite-de-passaro_azul-recife-350159-54675/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 244,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Teresa",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-teresa-teresa_vestido-malha_bege-creme-358001-55721/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 246,
+      "loja": "farm",
+      "nome": "Bata Estampada  Espada De São Jorge + Short Estampado Espada De São Jorge",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/bata-estampada-espada-de-sao-jorge-espada-de-sao-jorge_rosa-manaus-355015-55506/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 248,
+      "loja": "dressto",
+      "nome": "Vestido Cropped Est Miragem",
+      "planilha": "G,P,PP,XPP",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-cropped-est-miragem-01342948-0069/p"
+    },
+    {
+      "row": 250,
+      "loja": "farm",
+      "nome": "Vestido Tule Degagê Estampado Rio Antigo",
+      "planilha": "G,GG",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-tule-degage-estampado-rio-antigo-rio-antigo_vestido-malha_azul-sierra-356773-55724/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 252,
+      "loja": "farm",
+      "nome": "Vestido Reto Estampado Conchas",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-reto-estampado-conchas-conchas-bege-seda-356334-55477/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 251,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Floral Do Campo",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-floral-do-campo-floral-do-campo_azul-maral-357886-55363/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 249,
+      "loja": "farm",
+      "nome": "Vestido Plissado Estampado Conchas",
+      "planilha": "G,GG,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-plissado-estampado-conchas-conchas-bege-seda-356336-55477/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 256,
+      "loja": "farm",
+      "nome": "Vestido Longo Estampado Paraíso Das Aves",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-estampado-paraiso-das-aves-paraiso-das-aves_verde-senecio-355073-55465/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 254,
+      "loja": "farm",
+      "nome": "Macaquinho Blazer Estampado Vila Teresa",
+      "planilha": "G,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/macaquinho-blazer-estampado-vila-teresa-vila-teresa_localizado-mini_bege-creme-356023-55948/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 255,
+      "loja": "farm",
+      "nome": "Vestido Cropped Estampado Jardim De Mar",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-cropped-estampado-jardim-de-mar-jardim-de-mar_bege-seda-357831-55382/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 253,
+      "loja": "farm",
+      "nome": "Vestido Curto Estampado Vila Teresa",
+      "planilha": "G,GG,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-curto-estampado-vila-teresa-rio-classico_eng-vestido_bege-creme-356104-56497/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 257,
+      "loja": "farm",
+      "nome": "Blusa Tule Amarração Estampada Peixe De Cor + Calça Tule Estampada Peixe De Cor",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/blusa-tule-amarracao-estampada-peixe-de-cor-peixe-de-cor_multicolorido-357096-55435/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 260,
+      "loja": "farm",
+      "nome": "Blusa Estampada Floral Ana + Short Estampado Floral Ana",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/blusa-estampada-floral-ana-floral-ana_azul-astro-356697-55430/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 261,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Dois Irmãos",
+      "planilha": "G,GG,M,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-dois-irmaos-teresa_bege-creme-358946-55366/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 259,
+      "loja": "farm",
+      "nome": "Bata Estampada Carolina + Short Estampado Carolina",
+      "planilha": "P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/bata-estampada-carolina-carolina_localizado_bege-seda-356019-56217/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 258,
+      "loja": "farm",
+      "nome": "Vestido Cropped Estampado Vila Teresa",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-cropped-estampado-vila-teresa-vila-teresa_localizado-maxi_bege-creme-357926-56096/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 262,
+      "loja": "farm",
+      "nome": "Vestido Estampado Flor De Fruta Lenço",
+      "planilha": "G,GG,P",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-estampado-flor-de-fruta-lenco-flor-de-fruta-lenco_bege-seda-357836-55373/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 264,
+      "loja": "dressto",
+      "nome": "Vestido Jersey Estamapa Harmonia",
+      "planilha": "G,M,P,PP",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-jersey-estamapa-harmonia-01342851-0017/p"
+    },
+    {
+      "row": 265,
+      "loja": "dressto",
+      "nome": "Blusa Tule Estampa Lumini",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/blusa-tule-estampa-lumini-02072833-0018/p"
+    },
+    {
+      "row": 266,
+      "loja": "dressto",
+      "nome": "Vestido Tricoline Estampa Lírios",
+      "planilha": "G,GG",
+      "site_agora": "",
+      "link": "https://www.dressto.com.br/vestido-tricoline-estampa-lirios-01342821-2364/p"
+    },
+    {
+      "row": 267,
+      "loja": "farm",
+      "nome": "Vestido Longo Manga Estampado Paisagem Rio",
+      "planilha": "G,GG,M,P,PP",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-longo-manga-estampado-paisagem-rio-paisagem-rio_bege-seda-355032-55415/p?utm_campaign=7B1313"
+    },
+    {
+      "row": 263,
+      "loja": "farm",
+      "nome": "Vestido Midi Estampado Respiro De Rio",
+      "planilha": "G,GG,M",
+      "site_agora": "",
+      "link": "https://secure.farmrio.com.br/vestido-midi-estampado-respiro-de-rio-respiro-de-rio_malha_bege-seda-357998-55635/p?utm_campaign=7B1313"
+    }
+  ]
+}
