@@ -1,7 +1,7 @@
 /**
  * Orchestrator - Coordena todos os scrapers de lojas
- * Total: 17 produtos
- * Distribuição: FARM 12, Dress To 1, KJU 1, Live 2, ZZMall 1
+ * Total: ~160 produtos/dia
+ * Distribuição: FARM 78%, Dress To 15%, KJU 5%, ZZMall 2%
  */
 
 const fs = require('fs');
@@ -18,7 +18,6 @@ const { isDuplicate, normalizeId, loadHistory } = require('./historyManager'); /
 const {
     buildKjuMessage,
     buildDressMessage,
-    buildLiveMessage,
     buildFarmMessage,
     buildZzMallMessage
 } = require('./messageBuilder');
@@ -94,9 +93,8 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
     const quotas = overrideQuotas || {
         farm: Math.min(100, remaining.stores.farm), // Allow large pool for selection
         dressto: Math.min(10, remaining.stores.dressto),
-        kju: Math.min(3, remaining.stores.kju),   // scrape pool pequeno; 1 por run via RUN_CAPS
-        live: Math.min(10, remaining.stores.live),
-        zzmall: Math.min(2, remaining.stores.zzmall) // 3 por dia max; 1 por run
+        kju: Math.min(3, remaining.stores.kju),
+        zzmall: Math.min(2, remaining.stores.zzmall)
     };
 
     // Ajuste se o total for menor que o esperado
@@ -109,14 +107,14 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
     try {
         const calculatedTotalTarget = Object.values(quotas).reduce((a, b) => a + b, 0);
-        console.log(`🚀 ORCHESTRATOR: Meta ${calculatedTotalTarget} Itens [F:${quotas.farm} D:${quotas.dressto} K:${quotas.kju} L:${quotas.live} Z:${quotas.zzmall}]`);
+        console.log(`🚀 ORCHESTRATOR: Meta ${calculatedTotalTarget} Itens [F:${quotas.farm} D:${quotas.dressto} K:${quotas.kju} Z:${quotas.zzmall}]`);
 
         // =================================================================
         // PHASE 1: GOOGLE DRIVE PRIORITY
         // =================================================================
         const history = loadHistory();
         const driveProducts = [];
-        let driveItemsByStore = { farm: [], dressto: [], kju: [], zzmall: [], live: [] };
+        let driveItemsByStore = { farm: [], dressto: [], kju: [], zzmall: [] };
         let allUnusedDriveItems = [];
 
         try {
@@ -275,7 +273,6 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                         scrapedItems.forEach(p => {
                             if (store === 'dressto') p.message = buildDressMessage(p);
                             else if (store === 'kju') p.message = buildKjuMessage(p);
-                            else if (store === 'live') p.message = buildLiveMessage([p]); // Live expects array
                             else if (store === 'zzmall') p.message = buildZzMallMessage(p);
 
                             // Ensure flags are present in final payload
@@ -461,69 +458,7 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
             console.log(`✅ ZZMall: Cota preenchida pelo Drive (${driveCountZzMall}/${quotas.zzmall})`);
         }
 
-        const driveCountLive = driveProducts.filter(p => p.loja === 'live').length;
-        const remainingQuotaLive = Math.max(0, quotas.live - driveCountLive);
-
-        // 2. LIVE Special Handling (Sets)
-        if (remainingQuotaLive > 0) {
-            try {
-                const { scrapeLive } = require('./scrapers/live');
-                let products = await scrapeLive(remainingQuotaLive, false, context);
-
-                let i = 0;
-                while (i < products.length) {
-                    const current = products[i];
-                    let chunk = [];
-
-                    if (current.type === 'onepiece') {
-                        // Peça única -> Mantém objeto original
-                        chunk = [current];
-                        i++;
-                    } else {
-                        // Par Top + Bottom (qualquer)
-                        const next = products[i + 1];
-                        if (next && next.type !== 'onepiece') {
-                            // MERGE 2 produtos em 1 objeto SET
-                            console.log(`   🔗 Merging ${current.nome} + ${next.nome}`);
-
-                            const mergedProduct = {
-                                ...current,
-                                id: `${current.id}_${next.id}`,
-                                nome: `${current.nome} + ${next.nome}`,
-                                preco: parseFloat((current.preco + next.preco).toFixed(2)),
-                                precoOriginal: parseFloat(((current.precoOriginal || current.preco) + (next.precoOriginal || next.preco)).toFixed(2)),
-                                // Mantém imagem do Top (geralmente mais representativo) ou poderia tentar outra estratégia
-                                // User não pediu imagem composta, apenas "não enviar 2 produtos"
-                                imageUrl: current.imageUrl,
-                                imagePath: current.imagePath,
-                                link: current.url, // Link do Top
-                                loja: 'live',
-                                set: true
-                            };
-
-                            chunk = [mergedProduct];
-                            i += 2;
-                        } else {
-                            // Órfão (Top/Bottom sem par) - Envia single ou descarta?
-                            // Se não tiver par, envia single.
-                            chunk = [current];
-                            i++;
-                        }
-                    }
-
-                    // Gera mensagem e adiciona ao output final
-                    if (chunk.length > 0) {
-                        // Se for merge set, só tem 1 item no chunk
-                        const msg = buildLiveMessage(chunk);
-                        chunk.forEach(p => p.message = msg);
-                        allProducts.push(...chunk);
-                    }
-                }
-                console.log(`✅ LIVE: ${products.length} produtos processados`);
-            } catch (e) { console.error(`❌ LIVE Error: ${e.message}`); }
-        } else if (quotas.live > 0) {
-            console.log(`✅ LIVE: Cota preenchida pelo Drive (${driveCountLive}/${quotas.live})`);
-        }
+        // 2. LIVE Special Handling (REMOVIDA)
 
         // 3. REDISTRIBUIÇÃO (Garantir 12 produtos)
         let totalTarget = Object.values(quotas).reduce((a, b) => a + b, 0);
@@ -596,7 +531,6 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                             if (store === 'farm') p.message = buildFarmMessage(p, p.timerData);
                             else if (store === 'dressto') p.message = buildDressMessage(p);
                             else if (store === 'kju') p.message = buildKjuMessage(p);
-                            else if (store === 'live') p.message = buildLiveMessage([p]);
                             else if (store === 'zzmall') p.message = buildZzMallMessage(p);
 
                             p.novidade = !!(p.novidade || p.isNovidade);

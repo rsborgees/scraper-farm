@@ -6,39 +6,33 @@
 const BASE_TOTAL_LINKS = 11;
 const QUOTAS = {
     FARM: {
-        percent: 0.70,
-        count: 4,
-        dailyGoal: 112
+        percent: 0.78,
+        count: 8.5,
+        dailyGoal: 125
     },
     DRESS: {
         percent: 0.15,
-        count: 2.0,
+        count: 1.6,
         dailyGoal: 24
     },
     KJU: {
-        percent: 0.09,
-        count: 0.7,
-        dailyGoal: 10
-    },
-    LIVE: {
-        percent: 0.11,
-        count: 0.8,
-        dailyGoal: 12
+        percent: 0.05,
+        count: 0.5,
+        dailyGoal: 8
     },
     ZZMALL: {
-        percent: 0.06,
-        count: 0.4,
-        dailyGoal: 6
+        percent: 0.02,
+        count: 0.2,
+        dailyGoal: 3
     }
 };
 
 // Máximo absoluto de itens POR EXECUÇÃO por loja.
 // Mesmo que haja gap (Farm/Dress não encheu), as lojas menores NÃO absorvem o slack.
 const RUN_CAPS = {
-    farm: 8,      // 7 normal + 1 bazar (já controlado separadamente)
-    dressto: 10,  // Aumentado para 10 para rápida recuperação e atingir os 15% reais do pool
+    farm: 10,
+    dressto: 10,
     kju: 1,
-    live: 2,
     zzmall: 1
 };
 
@@ -102,7 +96,6 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         farm: 0,
         dressto: 0,
         kju: 0,
-        live: 0,
         zzmall: 0
     };
 
@@ -138,30 +131,36 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
     console.log(`📊 [Distribution] Pool de Bazar: ${bazarPool.length} itens.`);
 
     if (bazarPool.length > 0) {
-        // Prioriza Farm se houver bazar e se Farm tiver saldo
-        const farmBazar = bazarPool.find(p => (p.loja === 'farm' || (p.brand || '').toLowerCase() === 'farm') && hasDailySaldo('farm'));
-        let selectedBazar = null;
+        // REGRA: Bazar deve ser uma média de 10% da Farm.
+        // Só seleciona se ainda houver saldo diário de Bazar.
+        const canSendBazar = (dailyRemaining && dailyRemaining.bazar !== undefined) ? dailyRemaining.bazar > 0 : true;
 
-        if (farmBazar) {
-            selectedBazar = farmBazar;
-            console.log(`✅ [Distribution] Selecionado Bazaar FARM (Prioridade): ${selectedBazar.nome} (${selectedBazar.id})`);
-        } else {
-            // Pega o primeiro bazar disponível de uma loja que tenha saldo diário
-            selectedBazar = bazarPool.find(p => {
-                const s = (p.brand || p.loja || '').toLowerCase();
+        if (canSendBazar) {
+            // Prioriza Farm se houver bazar e se Farm tiver saldo
+            const farmBazar = bazarPool.find(p => (p.loja === 'farm' || (p.brand || '').toLowerCase() === 'farm') && hasDailySaldo('farm'));
+            let selectedBazar = null;
+
+            if (farmBazar) {
+                selectedBazar = farmBazar;
+                console.log(`✅ [Distribution] Selecionado Bazaar FARM (Prioridade): ${selectedBazar.nome} (${selectedBazar.id})`);
+            } else {
+                // Pega o primeiro bazar disponível de uma loja que tenha saldo diário
+                selectedBazar = bazarPool.find(p => {
+                    const s = (p.brand || p.loja || '').toLowerCase();
+                    const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
+                    return hasDailySaldo(storeKey);
+                });
+                if (selectedBazar) console.log(`✅ [Distribution] Selecionado Bazaar ${selectedBazar.loja}: ${selectedBazar.nome} (${selectedBazar.id})`);
+            }
+
+            if (selectedBazar) {
+                finalSelection.push(selectedBazar);
+                selectedIds.add(selectedBazar.id);
+                const s = (selectedBazar.brand || selectedBazar.loja || '').toLowerCase();
                 const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-                return hasDailySaldo(storeKey);
-            });
-            if (selectedBazar) console.log(`✅ [Distribution] Selecionado Bazaar ${selectedBazar.loja}: ${selectedBazar.nome} (${selectedBazar.id})`);
-        }
-
-        if (selectedBazar) {
-            finalSelection.push(selectedBazar);
-            selectedIds.add(selectedBazar.id);
-            const s = (selectedBazar.brand || selectedBazar.loja || '').toLowerCase();
-            const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-            if (roundCounts[storeKey] !== undefined) roundCounts[storeKey]++;
-            categoryCounts[getCatItem(selectedBazar)]++;
+                if (roundCounts[storeKey] !== undefined) roundCounts[storeKey]++;
+                categoryCounts[getCatItem(selectedBazar)]++;
+            }
         }
     }
 
@@ -195,7 +194,7 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
 
     // 1ª PASSAGEM: Seleção Dinâmica baseada nas metas da rodada (runQuotas)
     // Isso garante exatamente os 70/15/8/5/2% solicitados.
-    const allStores = ['zzmall', 'kju', 'live', 'dressto', 'farm'];
+    const allStores = ['zzmall', 'kju', 'dressto', 'farm'];
     
     let iterations = 0;
     while (finalSelection.length < TOTAL_LINKS && iterations < 50) {

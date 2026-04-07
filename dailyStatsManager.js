@@ -99,16 +99,17 @@ function recordSentItems(products) {
 let DAILY_GOALS = {
     total: 160,
     stores: {
-        farm: 112,
-        dressto: 24,
-        live: 13,
-        kju: 8,
-        zzmall: 3
+        farm: 125,     // 78% of 160
+        dressto: 24,   // 15% of 160
+        kju: 8,        // 5% of 160
+        zzmall: 3,     // 2% of 160
+        live: 0        // REMOVIDA
     },
+    bazar: 12,         // ~10% da Farm
     farmCategories: {
-        vestido: 75,
-        macacão: 17,
-        outros: 23
+        vestido: 82,   // ~65% de 125
+        macacão: 19,   // ~15% de 125
+        outros: 24     // Restante
     }
 };
 
@@ -136,10 +137,11 @@ function getRemainingQuotas() {
         stores: {
             farm: Math.max(0, DAILY_GOALS.stores.farm - stats.stores.farm),
             dressto: Math.max(0, DAILY_GOALS.stores.dressto - stats.stores.dressto),
-            live: Math.max(0, DAILY_GOALS.stores.live - stats.stores.live),
+            live: Math.max(0, DAILY_GOALS.stores.live - (stats.stores.live || 0)),
             kju: Math.max(0, DAILY_GOALS.stores.kju - stats.stores.kju),
             zzmall: Math.max(0, DAILY_GOALS.stores.zzmall - stats.stores.zzmall)
         },
+        bazar: Math.max(0, DAILY_GOALS.bazar - (stats.bazarCount || 0)),
         farmCategories: {
             vestido: Math.max(0, DAILY_GOALS.farmCategories.vestido - stats.farmCategories.vestido),
             macacão: Math.max(0, DAILY_GOALS.farmCategories.macacão - stats.farmCategories.macacão),
