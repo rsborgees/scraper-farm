@@ -65,7 +65,15 @@ async function scrapeSpecificIds(contextOrBrowser, driveItems, quota = 999, opti
                 for (const id of idsToSearch) {
                     try {
                         // Tenta múltiplas APIs para encontrar o produto
-                        const apiQueries = [
+                        // Se o ID contém underline (ex: 355028_350740), é uma referência composta.
+                        // Nesse caso priorizamos alternativeId_RefId para match exato, pois ft= pode
+                        // ignorar o underline e retornar o produto errado.
+                        const apiQueries = id.includes('_') ? [
+                            `fq=alternativeId_RefId:${id}`,
+                            `fq=skuId:${id}`,
+                            `fq=productId:${id}`,
+                            `ft=${id}`
+                        ] : [
                             `ft=${id}`,
                             `fq=productId:${id}`,
                             `fq=skuId:${id}`,
