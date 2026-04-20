@@ -331,8 +331,9 @@ async function runDailyDriveSyncJob() {
                         totalCandidates: candidates.length,
                         novidades: results.filter(p => p.novidade || p.isNovidade).length,
                         favoritos: results.filter(p => p.favorito || p.isFavorito).length,
-                        stores: stores.reduce((acc, store) => {
-                            acc[store] = results.filter(p => p.loja === store).length;
+                        stores: results.reduce((acc, p) => {
+                            const loja = p.loja || 'unknown';
+                            acc[loja] = (acc[loja] || 0) + 1;
                             return acc;
                         }, {})
                     },
