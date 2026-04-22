@@ -576,17 +576,7 @@ function setupDailySchedule() {
     const currentHourBRT = parseInt(formatter.format(now));
 
     console.log(`🕒 [SchedulerCheck] Agora: ${currentHourBRT}h BRT | Hoje: ${todayBRT} | Último Sync: ${lastRunDate}`);
-
-    if (currentHourBRT >= 5 && lastRunDate !== todayBRT) {
-        console.log(`⚡ [CatchUp] Drive Sync não rodou hoje (${todayBRT}). Agendando execução imediata...`);
-        // Pequeno delay para o servidor terminar de inicializar
-        setTimeout(() => runDailyDriveSyncJob().catch(e => console.error('❌ [CatchUp] Erro:', e.message)), 5000);
-    } else if (lastRunDate === todayBRT) {
-        console.log(`✅ [CatchUp] Drive Sync já executou hoje (${lastRunDate}). Nada a fazer.`);
-    } else {
-        console.log(`⏲️ [CatchUp] Aguardando horário das 05h para Drive Sync.`);
-    }
-
+    console.log(`⏲️  Aguardando horário das 05:00 para próxima execução do Drive Sync.`);
 }
 
 /**
