@@ -117,11 +117,11 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                         const isBazar = nameLower.includes('bazar') || /(^|[^a-z0-9])bazar([^a-z0-9]|$)/i.test(nameLower);
                         const isBazarFavorito = isBazar && isFavorito;
 
-                        // 🌦️ SEASONAL FLAGS
+                        // 🌦️ SEASONAL FLAGS (mutuamente exclusivos: alto inverno ≠ inverno, alto verão ≠ verão)
                         const isAltoVerao = nameLower.includes('alto verão');
-                        const isVerao = nameLower.includes('verão');
+                        const isVerao = !isAltoVerao && nameLower.includes('verão');
                         const isAltoInverno = nameLower.includes('alto inverno');
-                        const isInverno = nameLower.includes('inverno');
+                        const isInverno = !isAltoInverno && nameLower.includes('inverno');
 
                         // 🏪 DETECÇÃO DE LOJA pelo nome do arquivo
                         let store = null;
@@ -181,11 +181,11 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                         const isBazar = nameLower.includes('bazar') || /(^|[^a-z0-9])bazar([^a-z0-9]|$)/i.test(nameLower);
                         const isBazarFavorito = isBazar && isFavorito;
 
-                        // 🌦️ SEASONAL FLAGS
+                        // 🌦️ SEASONAL FLAGS (mutuamente exclusivos: alto inverno ≠ inverno, alto verão ≠ verão)
                         const isAltoVerao = nameLower.includes('alto verão');
-                        const isVerao = nameLower.includes('verão');
+                        const isVerao = !isAltoVerao && nameLower.includes('verão');
                         const isAltoInverno = nameLower.includes('alto inverno');
-                        const isInverno = nameLower.includes('inverno');
+                        const isInverno = !isAltoInverno && nameLower.includes('inverno');
 
                         // Clean name for search
                         let cleanName = file.name.toLowerCase()
