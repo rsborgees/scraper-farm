@@ -100,9 +100,14 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                     // Padrão Dress To: 01.34.2813_2380 -> Captura as partes numéricas ignorando pontos
                     const compositeMatches = file.name.match(/(\d{6,}[_-]\d+|\d{2}\.\d{2}\.\d{4}[_-]\d+)/g) || [];
 
-                    // 2. Tenta capturar IDs simples (mínimo 6 dígitos, permitindo letras ao redor - ZZMall usa A/S/F no início)
-                    const simpleMatches = (file.name.match(/[a-z]*\d{6,}[a-z]*/gi) || []).filter(sid => {
-                        return !compositeMatches.some(cid => cid.includes(sid));
+                    // 2. Tenta capturar IDs simples (mínimo 5 dígitos, permitindo letras ao redor - ZZMall usa A/S/F no início)
+                    const simpleMatches = (file.name.match(/[a-z]*\d{5,}[a-z]*/gi) || []).filter(sid => {
+                        // Exclui apenas se sid é uma sub-parte EXATA de um composite (ex: não exclui "362891" por causa de "362891_2380")
+                        const sidClean = sid.replace(/\./g, '');
+                        return !compositeMatches.some(cid => {
+                            const cidParts = cid.replace(/\./g, '').split(/[_-]/);
+                            return cidParts.some(p => p === sidClean);
+                        });
                     });
 
                     let ids = [...compositeMatches, ...simpleMatches];

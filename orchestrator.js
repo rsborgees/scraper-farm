@@ -160,7 +160,9 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                 const uniqueFarmItems = new Map();
 
                 driveItemsByStore.farm.forEach(item => {
-                    const normId = normalizeId(item.id);
+                    // Para conjuntos, usar o driveId completo ("355028 362891") como chave
+                    // para evitar colapsar dois conjuntos diferentes que compartilhem o mesmo primeiro ID.
+                    const normId = normalizeId(item.driveId || item.id);
                     // Se já existe, damos preferência para Favoritos e depois para Bazar
                     if (uniqueFarmItems.has(normId)) {
                         const existing = uniqueFarmItems.get(normId);
@@ -183,9 +185,14 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                     // EXCLUSÃO: Favoritos e Novidades são apenas para o Job das 05h (EXCETO Bazar)
                     if ((item.isFavorito || item.novidade || item.favorito || item.isNovidade) && !item.bazar) return false;
 
+                    // Para conjuntos, verificar o driveId completo ("355028 362891") em vez do primeiro ID.
+                    // Isso evita que um conjunto novo seja bloqueado porque uma de suas peças individuais
+                    // já foi parte de outro conjunto enviado anteriormente.
+                    const checkId = (item.ids && item.ids.length > 1) ? (item.driveId || item.id) : item.id;
+
                     // Farm Drive: 48h (2 dias).
                     const maxAge = 48; // Reverted same-day allowed for Bazar (User request)
-                    return !isDuplicate(normalizeId(item.id), { force: item.isFavorito, maxAgeHours: maxAge }, item.preco);
+                    return !isDuplicate(normalizeId(checkId), { force: item.isFavorito, maxAgeHours: maxAge }, item.preco);
                 });
 
                 // Fallback: se o pool de 48h ficou vazio (comum no servidor que roda 15x/dia),
