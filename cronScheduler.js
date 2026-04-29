@@ -341,6 +341,16 @@ async function runDailyDriveSyncJob() {
                     if (scraped.products && scraped.products.length > 0) {
                         scraped.products.forEach(p => {
                             if (!p.message) p.message = buildMessageForProduct(p);
+                            
+                            // 🌦️ SEASONAL FLAGS (Garantia de propagação do Drive para o Webhook no Job 05h)
+                            const driveItem = storeItems.find(item => normalizeId(item.id) === normalizeId(p.id));
+                            if (driveItem) {
+                                p.verao = !!(p.verao || driveItem.verao);
+                                p.altoVerao = !!(p.altoVerao || driveItem.altoVerao);
+                                p.inverno = !!(p.inverno || driveItem.inverno);
+                                p.altoInverno = !!(p.altoInverno || driveItem.altoInverno);
+                            }
+                            
                             results.push(p);
                         });
                     }

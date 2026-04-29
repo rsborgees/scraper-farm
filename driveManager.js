@@ -123,8 +123,9 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                         const isBazarFavorito = isBazar && isFavorito;
 
                         // 🌦️ SEASONAL FLAGS (mutuamente exclusivos: alto inverno ≠ inverno, alto verão ≠ verão)
-                        const isAltoVerao = nameLower.includes('alto verão');
-                        const isVerao = !isAltoVerao && nameLower.includes('verão');
+                        // Note: includes is case-insensitive since nameLower is toLowerCase()
+                        const isAltoVerao = nameLower.includes('alto verão') || nameLower.includes('alto verao');
+                        const isVerao = !isAltoVerao && (nameLower.includes('verão') || nameLower.includes('verao'));
                         const isAltoInverno = nameLower.includes('alto inverno');
                         const isInverno = !isAltoInverno && nameLower.includes('inverno');
 
@@ -187,8 +188,8 @@ async function getExistingIdsFromDrive(folderId, defaultStore = null) {
                         const isBazarFavorito = isBazar && isFavorito;
 
                         // 🌦️ SEASONAL FLAGS (mutuamente exclusivos: alto inverno ≠ inverno, alto verão ≠ verão)
-                        const isAltoVerao = nameLower.includes('alto verão');
-                        const isVerao = !isAltoVerao && nameLower.includes('verão');
+                        const isAltoVerao = nameLower.includes('alto verão') || nameLower.includes('alto verao');
+                        const isVerao = !isAltoVerao && (nameLower.includes('verão') || nameLower.includes('verao'));
                         const isAltoInverno = nameLower.includes('alto inverno');
                         const isInverno = !isAltoInverno && nameLower.includes('inverno');
 

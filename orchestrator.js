@@ -242,6 +242,15 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
                     scrapedDriveItems.forEach(p => {
                         p.message = buildFarmMessage(p, p.timerData);
+                        
+                        // 🌦️ SEASONAL FLAGS (Garantia de propagação do Drive para o Webhook)
+                        const driveItem = sortedFarmDriveItems.find(item => normalizeId(item.id) === normalizeId(p.id));
+                        if (driveItem) {
+                            p.verao = !!(p.verao || driveItem.verao);
+                            p.altoVerao = !!(p.altoVerao || driveItem.altoVerao);
+                            p.inverno = !!(p.inverno || driveItem.inverno);
+                            p.altoInverno = !!(p.altoInverno || driveItem.altoInverno);
+                        }
                     });
 
                     allProducts.push(...scrapedDriveItems);
