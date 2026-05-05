@@ -97,10 +97,12 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
     // Distribuição proporcional baseada no que FALTA para o dia
     const quotas = overrideQuotas || {
-        farm: Math.min(100, remaining.stores.farm), // Allow large pool for selection
-        dressto: Math.min(10, remaining.stores.dressto),
-        kju: Math.min(3, remaining.stores.kju),
-        zzmall: Math.min(2, remaining.stores.zzmall)
+        farm_normal: Math.min(60, remaining.stores.farm_normal || 0),
+        farm_bazar: Math.min(40, remaining.stores.farm_bazar || 0),
+        farm_novidade: Math.min(30, remaining.stores.farm_novidade || 0),
+        dressto: Math.min(10, remaining.stores.dressto || 0),
+        kju: Math.min(3, remaining.stores.kju || 0),
+        zzmall: Math.min(2, remaining.stores.zzmall || 0)
     };
 
     // Ajuste se o total for menor que o esperado
@@ -113,7 +115,7 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
     try {
         const calculatedTotalTarget = Object.values(quotas).reduce((a, b) => a + b, 0);
-        console.log(`🚀 ORCHESTRATOR: Meta ${calculatedTotalTarget} Itens [F:${quotas.farm} D:${quotas.dressto} K:${quotas.kju} Z:${quotas.zzmall}]`);
+        console.log(`🚀 ORCHESTRATOR: Meta ${calculatedTotalTarget} Itens [F_Norm:${quotas.farm_normal} F_Baz:${quotas.farm_bazar} F_Nov:${quotas.farm_novidade} D:${quotas.dressto}]`);
 
         // =================================================================
         // PHASE 1: GOOGLE DRIVE PRIORITY
@@ -182,8 +184,13 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                 });
 
                 let farmDriveItems = Array.from(uniqueFarmItems.values()).filter(item => {
-                    // EXCLUSÃO: Favoritos e Novidades são apenas para o Job das 05h (EXCETO Bazar)
-                    if ((item.isFavorito || item.novidade || item.favorito || item.isNovidade) && !item.bazar) return false;
+                    // EXCLUSÃO: Favoritos e Novidades são permitidos se houver quota para eles (farm_novidade)
+                    // Se não houver overrideQuotas (ex: rodada manual), mantemos o bloqueio para não poluir
+                    const hasNovidadeQuota = overrideQuotas && (overrideQuotas.farm_novidade > 0);
+                    
+                    if ((item.isFavorito || item.novidade || item.favorito || item.isNovidade) && !item.bazar) {
+                        if (!hasNovidadeQuota) return false;
+                    }
 
                     // Para conjuntos, verificar o driveId completo ("355028 362891") em vez do primeiro ID.
                     // Isso evita que um conjunto novo seja bloqueado porque uma de suas peças individuais
@@ -232,9 +239,9 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
                     console.log(`📊 [FARM] Totais no Drive: ${bazars.length} Bazar (Usando máx ${maxBazars}), ${normals.length} Regular.`);
 
-                    // GARANTIA: Mínimo 60 para garantir que tenhamos itens REGULARES além dos BAZAR
-                    // O farmQuota aqui é apenas para o SCRAPING, o distributionEngine aplicará a cota final de 7.
-                    const farmQuota = 60;
+                    // GARANTIA: Mínimo 80 para garantir que tenhamos itens de todas as sub-categorias no pool
+                    // O farmQuota aqui é apenas para o SCRAPING, o distributionEngine aplicará a cota final.
+                    const farmQuota = 80;
 
                     // Reutiliza o browser instanciado
                     // UPDATE: Agora retorna objeto com stats

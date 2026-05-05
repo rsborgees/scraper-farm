@@ -93,7 +93,9 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
 
     // Contadores desta rodada por loja
     const roundCounts = {
-        farm: 0,
+        farm_normal: 0,
+        farm_bazar: 0,
+        farm_novidade: 0,
         dressto: 0,
         kju: 0,
         zzmall: 0
@@ -126,41 +128,19 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         return (rem - roundCounts[store]) > 0;
     };
 
-    // 1. SELEÇÃO BAZAR (Exatamente 1 item por execução, prioridade FARM)
-    const bazarPool = allProducts.filter(p => p.bazar || p.isBazar);
-    console.log(`📊 [Distribution] Pool de Bazar: ${bazarPool.length} itens.`);
-
     if (bazarPool.length > 0) {
-        // REGRA: Bazar deve ser uma média de 10% da Farm.
-        // Só seleciona se ainda houver saldo diário de Bazar.
-        const canSendBazar = (dailyRemaining && dailyRemaining.bazar !== undefined) ? dailyRemaining.bazar > 0 : true;
-
-        if (canSendBazar) {
-            // Prioriza Farm se houver bazar e se Farm tiver saldo
-            const farmBazar = bazarPool.find(p => (p.loja === 'farm' || (p.brand || '').toLowerCase() === 'farm') && hasDailySaldo('farm'));
-            let selectedBazar = null;
-
-            if (farmBazar) {
-                selectedBazar = farmBazar;
-                console.log(`✅ [Distribution] Selecionado Bazaar FARM (Prioridade): ${selectedBazar.nome} (${selectedBazar.id})`);
-            } else {
-                // Pega o primeiro bazar disponível de uma loja que tenha saldo diário
-                selectedBazar = bazarPool.find(p => {
-                    const s = (p.brand || p.loja || '').toLowerCase();
-                    const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-                    return hasDailySaldo(storeKey);
-                });
-                if (selectedBazar) console.log(`✅ [Distribution] Selecionado Bazaar ${selectedBazar.loja}: ${selectedBazar.nome} (${selectedBazar.id})`);
-            }
-
-            if (selectedBazar) {
-                finalSelection.push(selectedBazar);
-                selectedIds.add(selectedBazar.id);
-                const s = (selectedBazar.brand || selectedBazar.loja || '').toLowerCase();
-                const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-                if (roundCounts[storeKey] !== undefined) roundCounts[storeKey]++;
-                categoryCounts[getCatItem(selectedBazar)]++;
-            }
+        // REGRA: Bazar deve respeitar a quota específica de farm_bazar se disponível
+        const farmBazarTarget = runQuotas.farm_bazar || 0;
+        const farmBazarPool = bazarPool.filter(p => (p.loja === 'farm' || (p.brand || '').toLowerCase() === 'farm') && hasDailySaldo('farm_bazar'));
+        
+        if (farmBazarPool.length > 0 && roundCounts.farm_bazar < farmBazarTarget) {
+            // Pega o melhor bazar da Farm
+            const selectedBazar = farmBazarPool[0];
+            finalSelection.push(selectedBazar);
+            selectedIds.add(selectedBazar.id);
+            roundCounts.farm_bazar++;
+            categoryCounts[getCatItem(selectedBazar)]++;
+            console.log(`✅ [Distribution] Selecionado Bazaar FARM: ${selectedBazar.nome} (${selectedBazar.id})`);
         }
     }
 
@@ -170,15 +150,23 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         if (p.bazar || p.isBazar) return false;
 
         const isFavOrNov = p.favorito || p.isFavorito || p.novidade || p.isNovidade || p.isSiteNovidade;
-        if (isFavOrNov) {
-            // Regra Relaxada: Lojas menores (zzmall, kju, live, dressto) PODEM enviar favoritos do Drive nas horas.
-            // Apenas a FARM é estritamente proibida de enviar favoritos horários para não poluir o grupo.
-            const s = (p.loja || p.brand || '').toLowerCase();
-            const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-            if (storeKey === 'farm') return false;
+        const s = (p.loja || p.brand || '').toLowerCase();
+        const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
+
+        if (storeKey === 'farm') {
+            // Farm Regular Pool: Apenas itens que NÃO são favoritos/novidades
+            if (isFavOrNov) return false;
         }
 
         return true;
+    });
+
+    // 2.5 SELEÇÃO NOVIDADES/FAVORITOS (Principalmente Farm)
+    const novidadePool = allProducts.filter(p => {
+        if (selectedIds.has(p.id)) return false;
+        if (p.bazar || p.isBazar) return false;
+        const isFavOrNov = p.favorito || p.isFavorito || p.novidade || p.isNovidade || p.isSiteNovidade;
+        return isFavOrNov;
     });
 
     // Função de prioridade (Vestidos e Macacões = 1, Outros = 2, Blusa/Conjunto = 3)
@@ -193,8 +181,7 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
     regularPool.sort((a, b) => getPriority(a) - getPriority(b));
 
     // 1ª PASSAGEM: Seleção Dinâmica baseada nas metas da rodada (runQuotas)
-    // Isso garante exatamente os 70/15/8/5/2% solicitados.
-    const allStores = ['zzmall', 'kju', 'dressto', 'farm'];
+    const allStores = ['zzmall', 'kju', 'dressto', 'farm_normal', 'farm_novidade'];
     
     let iterations = 0;
     while (finalSelection.length < TOTAL_LINKS && iterations < 50) {
@@ -211,11 +198,21 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
             // Saldo diário restante (Supabase + histórico local)
             if (!hasDailySaldo(store)) continue;
 
-            const nextItem = regularPool.find(p => {
+            const nextItemPool = store === 'farm_novidade' ? novidadePool : regularPool;
+
+            const nextItem = nextItemPool.find(p => {
                 if (selectedIds.has(p.id)) return false;
                 const s = (p.loja || p.brand || '').toLowerCase();
                 const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-                if (storeKey !== store) return false;
+                
+                // Mapeamento de storeKey para o slot da runQuota
+                let targetStoreSlot = storeKey;
+                if (storeKey === 'farm') {
+                    const isFavOrNov = p.favorito || p.isFavorito || p.novidade || p.isNovidade || p.isSiteNovidade;
+                    targetStoreSlot = isFavOrNov ? 'farm_novidade' : 'farm_normal';
+                }
+
+                if (targetStoreSlot !== store) return false;
 
                 // REGRA: Blusa e Conjunto nunca podem ser enviados em maior quantidade que macacão ou vestido,
                 // A MENOS que não haja mais opções melhores na pool
@@ -261,12 +258,20 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
 
             const s = (p.brand || p.loja || '').toLowerCase();
             const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
-            if (!hasDailySaldo(storeKey)) continue;
-            if (roundCounts[storeKey] >= (RUN_CAPS[storeKey] || 999)) continue; // Cap absoluto por run
+            
+            // Determina qual slot de quota este item ocuparia
+            let targetSlot = storeKey;
+            if (storeKey === 'farm') {
+                if (p.bazar || p.isBazar) targetSlot = 'farm_bazar';
+                else if (p.favorito || p.isFavorito || p.novidade || p.isNovidade) targetSlot = 'farm_novidade';
+                else targetSlot = 'farm_normal';
+            }
+
+            if (!hasDailySaldo(targetSlot)) continue;
+            if (roundCounts[targetSlot] >= (RUN_CAPS[storeKey] || 999)) continue; 
 
             // REGRAS FILLER FARM PRE-FILTER:
-            if (storeKey === 'farm' && (p.bazar || p.isBazar) && roundCounts.farm >= 1) continue;
-            if (storeKey === 'farm' && (p.favorito || p.isFavorito || p.novidade || p.isNovidade)) continue;
+            if (targetSlot === 'farm_bazar' && roundCounts.farm_bazar >= (runQuotas.farm_bazar || 1)) continue;
 
             const cat = getCatItem(p);
             if (cat === 'blusa' || cat === 'conjunto') {
@@ -289,7 +294,7 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
 
             finalSelection.push(p);
             selectedIds.add(p.id);
-            if (roundCounts[storeKey] !== undefined) roundCounts[storeKey]++;
+            if (roundCounts[targetSlot] !== undefined) roundCounts[targetSlot]++;
             categoryCounts[cat]++;
         }
     }

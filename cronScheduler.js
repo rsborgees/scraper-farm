@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { supabase } = require('./supabaseClient');
 const { recordSentItems } = require('./dailyStatsManager');
+const { loadQuotaTargets } = require('./utils/quotaManager');
 
 // Arquivo de flag para rastrear a última execução do Drive Sync Job
 const DRIVE_SYNC_FLAG_FILE = path.join(__dirname, 'data', 'last_drive_sync.json');
@@ -98,17 +99,36 @@ async function getSupabaseStats() {
 
         const stats = {
             total: data.length,
-            stores: { farm: 0, dressto: 0, live: 0, kju: 0, zzmall: 0 },
+            stores: { 
+                farm: 0, 
+                farm_bazar: 0, 
+                farm_novidade: 0,
+                dressto: 0, 
+                live: 0, 
+                kju: 0, 
+                zzmall: 0 
+            },
             bazar: 0
         };
 
         data.forEach(item => {
             const store = (item.loja || '').toLowerCase();
             const storeKey = (store === 'dress' || store === 'dressto') ? 'dressto' : store;
-            if (stats.stores[storeKey] !== undefined) {
-                stats.stores[storeKey]++;
+            
+            if (storeKey === 'farm') {
+                stats.stores.farm++; // Total Farm
+                if (item.bazar || item.bazarFavorito) {
+                    stats.stores.farm_bazar++;
+                } else if (item.favorito || item.novidade) {
+                    stats.stores.farm_novidade++;
+                }
+            } else {
+                if (stats.stores[storeKey] !== undefined) {
+                    stats.stores[storeKey]++;
+                }
             }
-            // Verifica bazar
+
+            // Verifica bazar global
             if (item.bazar || item.bazarFavorito) {
                 stats.bazar++;
             }
@@ -122,87 +142,146 @@ async function getSupabaseStats() {
 }
 
 /**
- * Calcula as quotas dinâmicas baseadas no estado atual do banco
+ * Calcula as quotas dinâmicas baseadas no estado atual do banco e metas do Supabase
  */
-function calculateDynamicQuotas(currentStats) {
-    const GLOBAL_TARGET = 160;
-    const IDEAL_TARGETS = {
-        farm: Math.round(GLOBAL_TARGET * 0.70),    // 116
-        dressto: Math.round(GLOBAL_TARGET * 0.15), // 25
-        live: Math.round(GLOBAL_TARGET * 0.08),    // 13
-        kju: Math.round(GLOBAL_TARGET * 0.05),     // 8
-        zzmall: Math.round(GLOBAL_TARGET * 0.02)   // 3
+async function calculateDynamicQuotas(currentStats) {
+    // 1. Carrega metas do Supabase
+    const dbTargets = await loadQuotaTargets();
+    
+    // Metas de Fallback se o Supabase falhar
+    const targets = dbTargets || {
+        farm: 130,
+        'bazar farm': 13,
+        'novidades/fav farm': 50,
+        dressto: 25,
+        live: 13,
+        kju: 8,
+        zzmall: 3
     };
 
-    console.log(`\n📊 [DynamicBalancing] Estado atual (Bank/Supabase) vs Meta (165):`);
+    // 2. Lógica de Sub-Quotas da Farm
+    // A meta 'farm' no DB é o TOTAL. Normais = Total - Bazar - Novidades
+    const farmTotalTarget = targets.farm || 130;
+    const farmBazarTarget = targets['bazar farm'] || 0;
+    const farmNovidadeTarget = targets['novidades/fav farm'] || 0;
+    const farmNormalTarget = Math.max(0, farmTotalTarget - farmBazarTarget - farmNovidadeTarget);
+
+    const IDEAL_TARGETS = {
+        farm_normal: farmNormalTarget,
+        farm_bazar: farmBazarTarget,
+        farm_novidade: farmNovidadeTarget,
+        dressto: targets.dressto || 25,
+        live: targets.live || 13,
+        kju: targets.kju || 8,
+        zzmall: targets.zzmall || 3
+    };
+
+    const GLOBAL_TARGET = Object.values(IDEAL_TARGETS).reduce((a, b) => a + b, 0);
+
+    // 3. Cálculo do GAP e Horas Restantes
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'America/Sao_Paulo',
+        hour: 'numeric',
+        hour12: false
+    });
+    const currentHour = parseInt(formatter.format(now));
+    const endHour = 21;
+    const hoursRemaining = Math.max(1, endHour - currentHour + 1);
+
+    console.log(`\n📊 [QuotaLogic] Hora Atual: ${currentHour}h | Horas Restantes: ${hoursRemaining}h`);
+    console.log(`📊 [QuotaLogic] Estado atual vs Metas (Total Diário: ${GLOBAL_TARGET}):`);
+    
     const needed = {};
     let totalNeeded = 0;
 
-    Object.keys(IDEAL_TARGETS).forEach(store => {
-        const current = currentStats.stores[store] || 0;
-        const target = IDEAL_TARGETS[store];
-        const diff = Math.max(0, target - current);
-        needed[store] = diff;
-        totalNeeded += diff;
-        console.log(`   🔸 ${store.toUpperCase().padEnd(7)}: ${String(current).padStart(3)} / ${target} (Falta: ${diff})`);
-    });
+    Object.keys(IDEAL_TARGETS).forEach(key => {
+        let current = 0;
+        if (key === 'farm_normal') {
+            current = Math.max(0, currentStats.stores.farm - currentStats.stores.farm_bazar - currentStats.stores.farm_novidade);
+        } else {
+            current = currentStats.stores[key] || 0;
+        }
 
-    const SESSION_CAPACITY = 11;
-    const sessionQuotas = {};
+        const target = IDEAL_TARGETS[key];
+        const diff = Math.max(0, target - current);
+        needed[key] = diff;
+        totalNeeded += diff;
+        console.log(`   🔸 ${key.toUpperCase().padEnd(14)}: ${String(current).padStart(3)} / ${target} (GAP: ${diff})`);
+    });
 
     if (totalNeeded === 0) {
-        console.log('✅ [DynamicBalancing] Meta diária global atingida.');
-        return { farm: 0, dressto: 0, kju: 0, live: 0, zzmall: 0 };
+        console.log('✅ [QuotaLogic] Meta diária global atingida.');
+        const emptyQuotas = {};
+        Object.keys(IDEAL_TARGETS).forEach(k => emptyQuotas[k] = 0);
+        return { sessionQuotas: emptyQuotas, remaining: { total: 0, stores: needed } };
     }
 
-    if (totalNeeded <= SESSION_CAPACITY) {
-        Object.assign(sessionQuotas, needed);
-    } else {
-        // Distribui a capacidade da sessão (11) priorizando quem tem o MAIOR GAP PERCENTUAL
-        // Isso garante que lojas menores que estão longe da meta (ex: Dress 10/25) 
-        // sejam priorizadas sobre Farm que já está quase lá (ex: 110/116).
-        const priorityScore = (store) => {
-            const current = currentStats.stores[store] || 0;
-            const target = IDEAL_TARGETS[store];
-            if (target === 0) return 0;
-            return (target - current) / target; // Gap percentual (0.0 a 1.0)
-        };
+    // 4. Distribuição do GAP pelo tempo restante
+    const sessionQuotas = {};
+    const SESSION_CAPACITY = 12;
+    let totalDistributed = 0;
 
-        const sortedByGap = Object.keys(needed)
-            .filter(s => needed[s] > 0)
-            .sort((a, b) => priorityScore(b) - priorityScore(a));
-
-        let distributed = 0;
-
-        // 1ª passada: Garante presença das lojas com maior gap
-        for (const store of sortedByGap) {
-            if (distributed < SESSION_CAPACITY) {
-                sessionQuotas[store] = (sessionQuotas[store] || 0) + 1;
-                distributed++;
-            }
-        }
-
-        // 2ª passada: Preenche o resto da sessão mantendo a prioridade
-        let idx = 0;
-        while (distributed < SESSION_CAPACITY) {
-            const store = sortedByGap[idx % sortedByGap.length];
-            if (sessionQuotas[store] < needed[store]) {
-                sessionQuotas[store]++;
-                distributed++;
-            }
-            idx++;
-            if (idx > 100) break; // Safety
-        }
-    }
-
-    // Garantir que todas as chaves existam
-    ['farm', 'dressto', 'kju', 'live', 'zzmall'].forEach(s => {
-        if (sessionQuotas[s] === undefined) sessionQuotas[s] = 0;
+    Object.keys(needed).forEach(key => {
+        const gap = needed[key];
+        let hourlyTarget = Math.ceil(gap / hoursRemaining);
+        sessionQuotas[key] = hourlyTarget;
+        totalDistributed += hourlyTarget;
     });
 
-    console.log(`🎯 [DynamicBalancing] Meta sugerida para esta execução: `, sessionQuotas);
+    // 5. Ajuste se a soma das quotas horárias exceder a capacidade da sessão
+    if (totalDistributed > SESSION_CAPACITY) {
+        console.log(`⚠️  [QuotaLogic] Soma horária (${totalDistributed}) excede capacidade (${SESSION_CAPACITY}). Balanceando...`);
+        
+        const storesWithGap = Object.keys(needed).filter(s => needed[s] > 0);
+        const balancedQuotas = {};
+        Object.keys(IDEAL_TARGETS).forEach(k => balancedQuotas[k] = 0);
+        let distributed = 0;
+
+        const priorityScore = (key) => {
+            let current = 0;
+            if (key === 'farm_normal') {
+                current = Math.max(0, currentStats.stores.farm - currentStats.stores.farm_bazar - currentStats.stores.farm_novidade);
+            } else {
+                current = currentStats.stores[key] || 0;
+            }
+            const target = IDEAL_TARGETS[key];
+            return (target - current) / target;
+        };
+
+        const sortedByPriority = storesWithGap.sort((a, b) => priorityScore(b) - priorityScore(a));
+
+        // 1ª passada: Garante 1 para cada se couber
+        for (const store of sortedByPriority) {
+            if (distributed < SESSION_CAPACITY) {
+                balancedQuotas[store]++;
+                distributed++;
+            }
+        }
+
+        // 2ª passada: Distribui o resto até o limite da hora ou da sessão
+        let idx = 0;
+        while (distributed < SESSION_CAPACITY) {
+            const store = sortedByPriority[idx % sortedByPriority.length];
+            if (balancedQuotas[store] < sessionQuotas[store] && balancedQuotas[store] < needed[store]) {
+                balancedQuotas[store]++;
+                distributed++;
+            } else if (distributed >= totalDistributed) {
+                break;
+            }
+            idx++;
+            if (idx > 100) break;
+        }
+        
+        Object.assign(sessionQuotas, balancedQuotas);
+    }
+
+    // Garantir consistência das chaves para o orchestrator
+    console.log(`🎯 [QuotaLogic] Metas para esta rodada:`, sessionQuotas);
+    
     return {
-        sessionQuotas, remaining: {
+        sessionQuotas, 
+        remaining: {
             total: totalNeeded,
             stores: needed
         }
@@ -255,9 +334,11 @@ async function runDailyDriveSyncJob() {
     console.log(`📂 DRIVE SYNC JOB INICIADO (05:00) - ${new Date().toLocaleString('pt-BR')}`);
     console.log('='.repeat(60) + '\n');
     try {
-        // NOTA: Para o Job de 5 AM, ignoramos o estado do banco conforme solicitado pelo usuário.
-        // O banco deve estar vazio nesse horário, permitindo o envio completo dos 50 itens.
-        console.log(`📊 [DriveSync] Iniciando processamento direto sem verificação de limite.`);
+        // 0. Carregar meta do Supabase para o Job das 05h
+        const dbTargets = await loadQuotaTargets();
+        const TARGET_GOAL = (dbTargets && dbTargets['novidades/fav farm']) || 50;
+        
+        console.log(`📊 [DriveSync] Iniciando processamento direto. Meta: ${TARGET_GOAL} itens.`);
 
         const { getExistingIdsFromDrive } = require('./driveManager');
         const { scrapeSpecificIds } = require('./scrapers/farm/idScanner');
@@ -308,7 +389,6 @@ async function runDailyDriveSyncJob() {
         // 4. Inicializar navegador e resultados
         const { browser, context } = await initBrowser();
         const results = [];
-        const TARGET_GOAL = 50;
         let candidatesOffset = 0;
 
         try {
@@ -487,14 +567,15 @@ async function runScheduledScraping() {
     try {
         // 0. Verificar limite e calcular quotas inteligentes (Filtrado por HOJE)
         const currentStats = await getSupabaseStats();
-        console.log(`📊 [LimitCheck] Itens enviados hoje: ${currentStats.total}/160`);
+        const { sessionQuotas, remaining } = await calculateDynamicQuotas(currentStats);
+        
+        const globalTarget = remaining.total + currentStats.total;
+        console.log(`📊 [LimitCheck] Itens enviados hoje: ${currentStats.total} | Meta Diária Estimada: ${globalTarget}`);
 
-        if (currentStats.total >= 160) {
-            console.log('⚠️ [LimitCheck] Meta diária de 160 peças atingida. Scraping cancelado.');
+        if (remaining.total <= 0) {
+            console.log('⚠️ [LimitCheck] Meta diária global atingida. Scraping cancelado.');
             return { products: [], webhook: { success: false, reason: 'limit_reached' } };
         }
-
-        const { sessionQuotas, remaining } = calculateDynamicQuotas(currentStats);
 
         // 1. Executa todos os scrapers com quotas dinâmicas
         const { runAllScrapers } = getOrchestrator();
