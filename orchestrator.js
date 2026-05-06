@@ -693,7 +693,8 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
     } catch (error) {
         console.error(`❌ Erro no Orchestrator: ${error.message}`);
-        return allProducts;
+        // Retorna array vazio em caso de erro crítico para não enviar o pool inteiro por engano
+        return [];
     } finally {
         if (browser) {
             console.log('🔒 Encerrando Navegador Mestre...');

@@ -128,6 +128,9 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
         return (rem - roundCounts[store]) > 0;
     };
 
+    // 1. SELEÇÃO BAZAR
+    const bazarPool = allProducts.filter(p => p.bazar || p.isBazar);
+    
     if (bazarPool.length > 0) {
         // REGRA: Bazar deve respeitar a quota específica de farm_bazar se disponível
         const farmBazarTarget = runQuotas.farm_bazar || 0;

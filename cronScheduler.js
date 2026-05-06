@@ -219,7 +219,7 @@ async function calculateDynamicQuotas(currentStats) {
 
     // 4. Distribuição do GAP pelo tempo restante
     const sessionQuotas = {};
-    const SESSION_CAPACITY = 12;
+    const SESSION_CAPACITY = 11;
     let totalDistributed = 0;
 
     Object.keys(needed).forEach(key => {
