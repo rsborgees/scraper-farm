@@ -308,6 +308,20 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
             if (finalSelection.length >= TOTAL_LINKS) break;
             if (selectedIds.has(p.id)) continue;
 
+            // MESMO NO FALLBACK EXTREMO: Respeita o saldo diário (Daily Saldo)
+            const s = (p.brand || p.loja || '').toLowerCase();
+            const storeKey = (s === 'dress' || s === 'dressto') ? 'dressto' : s;
+            let targetSlot = storeKey;
+            if (storeKey === 'farm') {
+                if (p.bazar || p.isBazar) targetSlot = 'farm_bazar';
+                else if (p.favorito || p.isFavorito || p.novidade || p.isNovidade) targetSlot = 'farm_novidade';
+                else targetSlot = 'farm_normal';
+            }
+            if (!hasDailySaldo(targetSlot)) {
+                console.log(`   🚫 Pulando ${p.nome} (${targetSlot}) pois atingiu meta diária.`);
+                continue;
+            }
+
             finalSelection.push(p);
             selectedIds.add(p.id);
             console.log(`   🆘 Item de resgate de uso: ${p.nome} (${p.loja})`);

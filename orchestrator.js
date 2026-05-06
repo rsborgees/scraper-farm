@@ -292,8 +292,13 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
                         console.log(`🔍 [${store.toUpperCase()}] Iniciando Drive-First (${items.length} itens)...`);
 
-                        // Usa o RUN_CAP do distributionEngine como quota: o scanner para cedo quando atingido
-                        let currentQuota = RUN_CAPS[store] || quotas[store] || 1;
+                        // Respeita estritamente a quota do scheduler
+                        let currentQuota = (quotas[store] !== undefined) ? quotas[store] : (RUN_CAPS[store] || 1);
+                        
+                        if (currentQuota <= 0) {
+                            console.log(`⏭️ [${store.toUpperCase()}] Meta diária já atingida. Pulando.`);
+                            continue;
+                        }
                         if (store === 'dressto') currentQuota = Math.min(10, (quotas.dressto || 2) + 2);
 
                         const { products: scrapedItems, stats } = await scrapeSpecificIdsGeneric(context, limitedItems, store, currentQuota);
