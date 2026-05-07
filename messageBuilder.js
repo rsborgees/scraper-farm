@@ -156,7 +156,7 @@ function buildFarmMessage(produto, timerData = null) {
             // Adiciona parâmetros de vendedora na URL individual
             const itemUrl = normalizeFarmUrl(appendQueryParams(item.url, { utm_campaign: SELLER_CODE }));
 
-            itemsMsg += `*${item.nome}* ${sizes} ${priceLine}\n${itemUrl}\n\n`;
+            itemsMsg += `*${item.nome}* \n${sizes} \n${priceLine}\n\n${itemUrl}\n\n`;
         });
 
         const driveSizeMsg = produto.driveSize ? `Meu (Fran) tamanho ideal: ${produto.driveSize}` : null;
