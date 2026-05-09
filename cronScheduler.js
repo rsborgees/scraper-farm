@@ -148,20 +148,12 @@ async function calculateDynamicQuotas(currentStats) {
     // 1. Carrega metas do Supabase
     const dbTargets = await loadQuotaTargets();
     
-    // Metas de Fallback se o Supabase falhar
-    const targets = dbTargets || {
-        farm: 130,
-        'bazar farm': 13,
-        'novidades/fav farm': 50,
-        dressto: 25,
-        live: 13,
-        kju: 8,
-        zzmall: 3
-    };
+    // Se o Supabase falhar ou estiver vazio, metas serão 0
+    const targets = dbTargets || {};
 
     // 2. Lógica de Sub-Quotas da Farm
     // A meta 'farm' no DB é o TOTAL. Normais = Total - Bazar - Novidades
-    const farmTotalTarget = targets.farm || 130;
+    const farmTotalTarget = targets.farm || 0;
     const farmBazarTarget = targets['bazar farm'] || 0;
     const farmNovidadeTarget = targets['novidades/fav farm'] || 0;
     const farmNormalTarget = Math.max(0, farmTotalTarget - farmBazarTarget - farmNovidadeTarget);
@@ -170,10 +162,10 @@ async function calculateDynamicQuotas(currentStats) {
         farm_normal: farmNormalTarget,
         farm_bazar: farmBazarTarget,
         farm_novidade: farmNovidadeTarget,
-        dressto: targets.dressto || 25,
-        live: targets.live || 13,
-        kju: targets.kju || 8,
-        zzmall: targets.zzmall || 3
+        dressto: targets.dressto || 0,
+        live: targets.live || 0,
+        kju: targets.kju || 0,
+        zzmall: targets.zzmall || 0
     };
 
     const GLOBAL_TARGET = Object.values(IDEAL_TARGETS).reduce((a, b) => a + b, 0);
@@ -336,7 +328,7 @@ async function runDailyDriveSyncJob() {
     try {
         // 0. Carregar meta do Supabase para o Job das 05h
         const dbTargets = await loadQuotaTargets();
-        const TARGET_GOAL = (dbTargets && dbTargets['novidades/fav farm']) || 50;
+        const TARGET_GOAL = (dbTargets && dbTargets['novidades/fav farm']) || 0;
         
         console.log(`📊 [DriveSync] Iniciando processamento direto. Meta: ${TARGET_GOAL} itens.`);
 
