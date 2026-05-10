@@ -3,7 +3,7 @@
  */
 
 // Cotas Diárias (Base ~11 links por execução para atingir ~160/dia em 15 horários)
-const BASE_TOTAL_LINKS = 11;
+const BASE_TOTAL_LINKS = 20;
 const QUOTAS = {
     FARM: {
         percent: 0.78,
@@ -30,9 +30,9 @@ const QUOTAS = {
 // Máximo absoluto de itens POR EXECUÇÃO por loja.
 // Mesmo que haja gap (Farm/Dress não encheu), as lojas menores NÃO absorvem o slack.
 const RUN_CAPS = {
-    farm: 10,
-    dressto: 10,
-    kju: 1,
+    farm: 20,
+    dressto: 15,
+    kju: 2,
     zzmall: 1
 };
 

@@ -155,7 +155,7 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                     // Removido o limite duro de 2 para permitir que Dress To recupere o atraso
                     quotas.dressto = (overrideQuotas && overrideQuotas.dressto !== undefined) 
                         ? overrideQuotas.dressto 
-                        : Math.min(10, newRemaining.stores.dressto); 
+                        : Math.min(15, newRemaining.stores.dressto); 
                 }
 
                 // FARM Drive Items (único scraper de ID implementado por enquanto)
@@ -241,7 +241,7 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
                     // GARANTIA: Mínimo 80 para garantir que tenhamos itens de todas as sub-categorias no pool
                     // O farmQuota aqui é apenas para o SCRAPING, o distributionEngine aplicará a cota final.
-                    const farmQuota = 80;
+                    const farmQuota = 120;
 
                     // Reutiliza o browser instanciado
                     // UPDATE: Agora retorna objeto com stats
@@ -299,7 +299,7 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                             console.log(`⏭️ [${store.toUpperCase()}] Meta diária já atingida. Pulando.`);
                             continue;
                         }
-                        if (store === 'dressto') currentQuota = Math.min(10, (quotas.dressto || 2) + 2);
+                        if (store === 'dressto') currentQuota = Math.min(15, (quotas.dressto || 2) + 2);
 
                         const { products: scrapedItems, stats } = await scrapeSpecificIdsGeneric(context, limitedItems, store, currentQuota);
 
@@ -371,7 +371,7 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
                         .slice(0, 50);
 
                     // Aumentamos a chamada do scraper para cobrir não apenas a cota, mas permitir que atue fortemente no filler
-                    const dressQuota = 15; // Fixo para permitir margem larga e recuperar % rapidamente
+                    const dressQuota = 20; // Fixo para permitir margem larga e recuperar % rapidamente
                     const { products: scrapedItems, stats } = await scrapeSpecificIdsGeneric(context, limitedItems, 'dressto', dressQuota, { maxAgeHours: 24 }); // Permite fallback de 24h
 
                     scrapedItems.forEach(p => {
