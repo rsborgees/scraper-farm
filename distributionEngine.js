@@ -270,7 +270,21 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
                 else targetSlot = 'farm_normal';
             }
 
-            if (!hasDailySaldo(targetSlot)) continue;
+            if (!hasDailySaldo(targetSlot)) {
+                if (targetSlot === 'farm_normal') {
+                    if (hasDailySaldo('farm_novidade')) {
+                        targetSlot = 'farm_novidade';
+                        console.log(`   🔄 Filler: farm_normal usando quota restante de farm_novidade para ${p.nome}`);
+                    } else if (hasDailySaldo('farm_bazar')) {
+                        targetSlot = 'farm_bazar';
+                        console.log(`   🔄 Filler: farm_normal usando quota restante de farm_bazar para ${p.nome}`);
+                    } else {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+            }
             if (roundCounts[targetSlot] >= (RUN_CAPS[storeKey] || 999)) continue; 
 
             // REGRAS FILLER FARM PRE-FILTER:
@@ -320,9 +334,23 @@ function distributeLinks(allProducts, runQuotas = {}, dailyRemaining = {}) {
                 else if (p.favorito || p.isFavorito || p.novidade || p.isNovidade) targetSlot = 'farm_novidade';
                 else targetSlot = 'farm_normal';
             }
+            
             if (!hasDailySaldo(targetSlot)) {
-                console.log(`   🚫 Pulando ${p.nome} (${targetSlot}) pois atingiu meta diária.`);
-                continue;
+                if (targetSlot === 'farm_normal') {
+                    if (hasDailySaldo('farm_novidade')) {
+                        targetSlot = 'farm_novidade';
+                        console.log(`   🔄 Resgate: farm_normal usando quota restante de farm_novidade`);
+                    } else if (hasDailySaldo('farm_bazar')) {
+                        targetSlot = 'farm_bazar';
+                        console.log(`   🔄 Resgate: farm_normal usando quota restante de farm_bazar`);
+                    } else {
+                        console.log(`   🚫 Pulando ${p.nome} (${targetSlot}) pois atingiu meta diária.`);
+                        continue;
+                    }
+                } else {
+                    console.log(`   🚫 Pulando ${p.nome} (${targetSlot}) pois atingiu meta diária.`);
+                    continue;
+                }
             }
 
             finalSelection.push(p);

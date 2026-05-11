@@ -125,4 +125,4 @@ async function sendNovidadesExtra(limit = 10) {
     }
 }
 
-sendNovidadesExtra(15);
+sendNovidadesExtra(20);
