@@ -318,15 +318,15 @@ async function runDailyPromoJob() {
 }
 
 /**
- * Job das 05h: Envia favoritos e novidades do Google Drive
+ * Job das 09h: Envia favoritos e novidades do Google Drive
  * Regra: Até 50 produtos, rotação determinística (não repetir até percorrer todos)
  */
 async function runDailyDriveSyncJob() {
     console.log('\n' + '='.repeat(60));
-    console.log(`📂 DRIVE SYNC JOB INICIADO (05:00) - ${new Date().toLocaleString('pt-BR')}`);
+    console.log(`📂 DRIVE SYNC JOB INICIADO (09:00) - ${new Date().toLocaleString('pt-BR')}`);
     console.log('='.repeat(60) + '\n');
     try {
-        // 0. Carregar meta do Supabase para o Job das 05h
+        // 0. Carregar meta do Supabase para o Job das 09h
         const dbTargets = await loadQuotaTargets();
         const TARGET_GOAL = (dbTargets && dbTargets['novidades/fav farm']) || 0;
         
@@ -414,7 +414,7 @@ async function runDailyDriveSyncJob() {
                         scraped.products.forEach(p => {
                             if (!p.message) p.message = buildMessageForProduct(p);
                             
-                            // 🌦️ SEASONAL FLAGS (Garantia de propagação do Drive para o Webhook no Job 05h)
+                            // 🌦️ SEASONAL FLAGS (Garantia de propagação do Drive para o Webhook no Job 09h)
                             const driveItem = storeItems.find(item => normalizeId(item.id) === normalizeId(p.id));
                             if (driveItem) {
                                 p.verao = !!(p.verao || driveItem.verao);
@@ -431,7 +431,7 @@ async function runDailyDriveSyncJob() {
                 console.log(`📊 Progresso: ${results.length}/${TARGET_GOAL} itens coletados.`);
             }
 
-            console.log(`\n📦 Total final coletado para o Job das 05h: ${results.length} produtos.`);
+            console.log(`\n📦 Total final coletado para o Job das 09h: ${results.length} produtos.`);
 
             if (results.length > 0) {
                 // 6. Enviar para Webhook
@@ -635,9 +635,9 @@ function setupDailySchedule() {
         await checkFarmTimer();
     }, { timezone });
 
-    // 4. Drive Sync Job: Todo dia às 05:00
-    const driveSyncCron = '0 5 * * *';
-    console.log(`   📅 Drive Sync: ${driveSyncCron} (05:00)`);
+    // 4. Drive Sync Job: Todo dia às 09:00
+    const driveSyncCron = '0 9 * * *';
+    console.log(`   📅 Drive Sync: ${driveSyncCron} (09:00)`);
 
     cron.schedule(driveSyncCron, async () => {
         await runDailyDriveSyncJob();
@@ -645,7 +645,7 @@ function setupDailySchedule() {
 
     console.log('✅ Cron Jobs Iniciados! (Timezone: São Paulo)\n');
 
-    // 🔁 CATCH-UP: Se o processo reiniciou depois das 05h e o job ainda não rodou hoje, executa agora
+    // 🔁 CATCH-UP: Se o processo reiniciou depois das 09h e o job ainda não rodou hoje, executa agora
     const todayBRT = getTodayBRTISO();
     const lastRunDate = getLastDriveSyncDate();
 
@@ -659,7 +659,7 @@ function setupDailySchedule() {
     const currentHourBRT = parseInt(formatter.format(now));
 
     console.log(`🕒 [SchedulerCheck] Agora: ${currentHourBRT}h BRT | Hoje: ${todayBRT} | Último Sync: ${lastRunDate}`);
-    console.log(`⏲️  Aguardando horário das 05:00 para próxima execução do Drive Sync.`);
+    console.log(`⏲️  Aguardando horário das 09:00 para próxima execução do Drive Sync.`);
 }
 
 /**

@@ -437,7 +437,7 @@ async function runAllScrapers(overrideQuotas = null, remainingOverrides = null) 
 
         // --- NOVIDADES DO SITE (Removido) ---
         // Removido da execução horária para não enviar novidades/favoritos. 
-        // Apenas o Job de 05h deve enviar novidades.
+        // Apenas o Job de 09h deve enviar novidades.
 
         const remainingQuotaDressTo = Math.max(0, quotas.dressto - allProducts.filter(p => p.loja === 'dressto').length);
 
